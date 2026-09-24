@@ -23,7 +23,10 @@ services:
       #   SMTP_USER=your@gmail.com            (or an app-specific address)
       #   SMTP_PASS=your-app-password        (Gmail: App Passwords, not your login password)
       #   MAIL_FROM=SSC Quiz Prep <your@gmail.com>
-      # Until SMTP is configured, leave NODE_ENV unset so the server works in
-      # dev mode (the OTP is returned in the API response and shown in-app).
-      # Once SMTP works, add  NODE_ENV=production  here to require real email.
+      # Until SMTP is configured, the app can work with in-app OTP by adding:
+      #   DEV_OTP_MODE=true
+      # (off by default; the OTP is returned in the API response and shown in-app).
+      # With both unset and no SMTP, registration is disabled for safety.
+      - key: DEV_OTP_MODE
+        value: 'true'
     healthCheckPath: /api/health

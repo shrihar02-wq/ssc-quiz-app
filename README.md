@@ -1,7 +1,8 @@
 # SSC Quiz Prep
 
-Offline-first SSC exam prep app (React + Vite + Capacitor) with an optional
-self-hosted login/cloud-sync backend.
+Offline-first SSC exam prep app (React + Vite + Capacitor) with a self-hosted
+login/cloud-sync backend. Every user signs in by email; addresses are verified
+with a one-time passcode (OTP).
 
 ## Run the app
 
@@ -20,9 +21,26 @@ There is no third-party account needed — a tiny backend ships with the app:
 node server/index.mjs          # starts on http://localhost:4000
 ```
 
-Endpoints: `POST /api/auth/register`, `POST /api/auth/login`,
+Endpoints: `POST /api/auth/register`, `POST /api/auth/verify-otp`,
+`POST /api/auth/resend-otp`, `POST /api/auth/login`,
 `GET/PUT /api/progress`, `GET /api/me`. Passwords are hashed with scrypt, auth
 uses JWT (30-day session), and progress saves to `server/data/` (JSON files).
+
+### Email OTP
+
+The signup code is emailed via SMTP. Set these env vars to enable real email:
+
+| Var            | Example                              |
+| -------------- | ------------------------------------ |
+| `SMTP_HOST`    | `smtp.gmail.com`                     |
+| `SMTP_PORT`    | `465`                                |
+| `SMTP_USER`    | `your@gmail.com`                     |
+| `SMTP_PASS`    | Gmail **App Password** (not login pw)|
+| `MAIL_FROM`    | `SSC Quiz Prep <your@gmail.com>`     |
+
+Without SMTP, set `DEV_OTP_MODE=true` and the server shows the code in the API
+response (the app displays it on the OTP screen) so signup still works while
+you test. This fallback is off by default in production.
 
 ### Point the app at your server
 

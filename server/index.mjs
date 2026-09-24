@@ -36,7 +36,10 @@ const USERS_FILE = join(DATA, 'users.json')
 const PROGRESS_FILE = join(DATA, 'progress.json')
 const SECRET_FILE = join(DATA, '.jwt-secret')
 const PORT = Number(process.env.PORT) || 4000
-const DEV_MODE = process.env.NODE_ENV !== 'production'
+// Dev fallback: with DEV_OTP_MODE=true (Render env), the OTP is returned in
+// the response and shown in-app so the app works without SMTP. Off by default
+// in production — real email is preferred. Requires explicit opt-in.
+const DEV_MODE = process.env.NODE_ENV !== 'production' || process.env.DEV_OTP_MODE === 'true'
 
 mkdirSync(DATA, { recursive: true })
 
@@ -385,6 +388,12 @@ const server = createServer(async (req, res) => {
         return send(res, 409, { error: 'This email is already registered. Please log in.' })
       }
 
+      if (!SMTP_READY && !DEV_MODE) {
+        return send(res, 500, {
+          error: 'Email service is not configured on the server yet.',
+        })
+      }
+
       const user = {
         id: randomBytes(8).toString('hex'),
         name, email,
@@ -396,11 +405,6 @@ const server = createServer(async (req, res) => {
       writeJson(USERS_FILE, db)
       log(`registered ${email}`)
 
-      if (!SMTP_READY && !DEV_MODE) {
-        return send(res, 500, {
-          error: 'Email service is not configured on the server yet.',
-        })
-      }
       const dev = sendOtp(email)
       if (dev.dev && DEV_MODE) {
         return send(res, 201, { otpSent: false, devOtp: dev.code, email })
@@ -511,7 +515,7 @@ const server = createServer(async (req, res) => {
 
 function banner() {
   console.log('✅ SSC Quiz server running on http://localhost:' + PORT)
-  console.log('   Email OTP:', SMTP_READY ? `SMTP ready (${SMTP.host})` : 'NOT configured — dev fallback active unless NODE_ENV=production')
+  console.log(`   Email OTP: ${SMTP_READY ? `SMTP ready (${SMTP.host})` : DEV_MODE ? 'dev mode (OTP returned in API response) — set DEV_OTP_MODE=false + SMTP_* for real email' : 'NOT configured — registration disabled. Set SMTP_* envs or DEV_OTP_MODE=true to enable.'}`)
   console.log('   Register/Verify:  POST /api/auth/register + /api/auth/verify-otp')
   console.log('   Login:            POST /api/auth/login')
   console.log('   Progress:         GET/PUT /api/progress (Bearer token)')
