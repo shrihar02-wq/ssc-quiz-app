@@ -158,6 +158,36 @@ a {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* animated sheen across the hero */
+.hero .sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.hero .sheen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: sheen 5s ease-in-out infinite;
+}
+
+@keyframes sheen {
+  0% {
+    left: -60%;
+  }
+  55%,
+  100% {
+    left: 130%;
+  }
+}
+
 .hero h2 {
   font-size: 24px;
   font-weight: 800;
@@ -259,6 +289,18 @@ a {
   font-weight: 800;
   margin: 24px 0 12px;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '';
+  width: 10px;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, var(--primary), var(--violet));
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.45);
 }
 
 /* Stat cards */
@@ -1072,4 +1114,209 @@ a {
 .nav-item.active {
   background: var(--primary-light);
   color: var(--primary-dark);
+}
+
+/* ---- User chip (topbar account) ---- */
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 6px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(30, 27, 75, 0.08);
+}
+
+.uc-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--violet));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.uc-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uc-logout {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--danger-light);
+  color: var(--danger);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.uc-logout:active {
+  transform: scale(0.92);
+}
+
+/* ---- Topbar logo ---- */
+.topbar-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  background: linear-gradient(135deg, var(--primary-light), var(--violet-light));
+  box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.25);
+}
+
+/* ---- OTP input ---- */
+.otp-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 6px 0 16px;
+}
+
+.otp-box {
+  width: 46px;
+  height: 54px;
+  border-radius: 14px;
+  border: 1.5px solid var(--surface-3);
+  background: var(--surface-0);
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.otp-box:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  transform: translateY(-1px);
+}
+
+/* ---- Reprocessed field / segmented control ---- */
+.seg {
+  display: flex;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.seg button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.seg button.active {
+  background: #fff;
+  color: var(--primary-dark);
+  box-shadow: 0 2px 8px rgba(30, 27, 75, 0.12);
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+button:disabled {
+  opacity: 0.55;
+}
+
+/* ---- Advanced polish: hover lifts, glow, gradient stats ---- */
+@media (hover: hover) {
+  .subject-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .action-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card:hover {
+    border-color: var(--border-strong);
+  }
+}
+
+.subject-card,
+.action-tile,
+.card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.28);
+}
+
+.btn-primary:not(:disabled):hover {
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+}
+
+.stat .num {
+  background: linear-gradient(120deg, var(--primary-dark), var(--violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-chip {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.gradient-ring {
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.12), 0 8px 22px rgba(124, 58, 237, 0.22);
+}
+
+.icon-bubble {
+  transition: transform 0.15s ease;
+}
+
+.action-tile:hover .icon-bubble {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.topbar {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }

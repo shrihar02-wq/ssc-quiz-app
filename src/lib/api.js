@@ -4,7 +4,7 @@
 //   Android emulator:    http://10.0.2.2:4000
 //   Real phone (same Wi-Fi): http://<your-PC-LAN-IP>:4000
 //   Hosted (Render/Railway): https://<your-app>.onrender.com  (change here)
-export const API_BASE = 'http://localhost:4000'
+export const API_BASE = 'https://ssc-quiz-server.onrender.com'
 
 export async function api(path, method = 'GET', body = null, token = null) {
   const headers = { 'Content-Type': 'application/json' }
@@ -22,6 +22,11 @@ export async function api(path, method = 'GET', body = null, token = null) {
   }
 
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`)
+  if (!res.ok) {
+    const err = new Error(data.error || `Request failed (${res.status})`)
+    err.status = res.status
+    err.meta = data
+    throw err
+  }
   return data
 }

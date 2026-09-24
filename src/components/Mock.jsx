@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { buildMockSet, totalQuestions } from '../data/questions'
 import { newSession } from '../lib/session'
+import UserChip from './UserChip'
 
 const PRESETS = [
   { label: 'Mini Mock', qs: 25, min: 25, emoji: '⚡', desc: 'Quick 25-minute warm-up' },
@@ -38,6 +39,7 @@ export default function Mock() {
       <div className="topbar">
         <Link to="/" className="icon-btn">←</Link>
         <h1>Mock Test</h1>
+        <UserChip />
       </div>
 
       <div className="page">

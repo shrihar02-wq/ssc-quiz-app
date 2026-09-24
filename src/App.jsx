@@ -14,13 +14,12 @@ const NAV_HIDDEN = ['/quiz', '/login']
 function Layout() {
   const { pathname } = useLocation()
   const auth = getAuth()
-  const loggedIn = auth && auth.token
+  const loggedIn = !!auth && !!auth.token
 
-  // First visit / logged-out users land on the login screen first.
-  if (!loggedIn && !(auth && auth.offline) && pathname !== '/login') {
+  // Every user must log in — no guest/offline mode anymore.
+  if (!loggedIn && pathname !== '/login') {
     return <Navigate to="/login" replace />
   }
-  // Logged-in users never see the login screen again.
   if (loggedIn && pathname === '/login') {
     return <Navigate to="/" replace />
   }

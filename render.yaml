@@ -16,4 +16,14 @@ services:
       # Keep sessions valid across restarts (data files are ephemeral on free tier).
       - key: JWT_SECRET
         generateValue: true
+      # OTP email verification requires real SMTP credentials. Add these values
+      # in Render > ssc-quiz-server > Environment (then redeploy):
+      #   SMTP_HOST=smtp.gmail.com
+      #   SMTP_PORT=465
+      #   SMTP_USER=your@gmail.com            (or an app-specific address)
+      #   SMTP_PASS=your-app-password        (Gmail: App Passwords, not your login password)
+      #   MAIL_FROM=SSC Quiz Prep <your@gmail.com>
+      # Until SMTP is configured, leave NODE_ENV unset so the server works in
+      # dev mode (the OTP is returned in the API response and shown in-app).
+      # Once SMTP works, add  NODE_ENV=production  here to require real email.
     healthCheckPath: /api/health

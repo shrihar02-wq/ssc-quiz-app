@@ -3,6 +3,7 @@ import { useSyncExternalStore } from 'react'
 import { Link } from 'react-router-dom'
 import { SUBJECTS, categoryCount } from '../data/questions'
 import { subscribeProgress, getProgress, resetProgress } from '../lib/store'
+import UserChip from './UserChip'
 
 function useProgress() {
   return useSyncExternalStore(subscribeProgress, getProgress)
@@ -18,6 +19,7 @@ export default function Stats() {
       <div className="topbar">
         <Link to="/" className="icon-btn">←</Link>
         <h1>Progress</h1>
+        <UserChip />
       </div>
 
       <div className="page">

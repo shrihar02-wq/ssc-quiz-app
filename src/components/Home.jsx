@@ -2,7 +2,8 @@ import { useSyncExternalStore } from 'react'
 import { Link } from 'react-router-dom'
 import { SUBJECTS, totalQuestions, categoryCount } from '../data/questions'
 import { subscribeProgress, getProgress } from '../lib/store'
-import { getAuth, logout } from '../lib/auth'
+import { getAuth } from '../lib/auth'
+import UserChip from './UserChip'
 
 function useProgress() {
   return useSyncExternalStore(subscribeProgress, getProgress)
@@ -26,10 +27,17 @@ export default function Home() {
 
   return (
     <div>
+      <div className="topbar">
+        <span className="topbar-logo">🎓</span>
+        <h1>SSC Quiz Prep</h1>
+        <UserChip />
+      </div>
+
       <div className="page">
         <div className="hero">
+          <span className="sheen" />
           <h2>{greeting()}, {name || 'Aspirant'} 👋</h2>
-          <p>SSC CGL · CHSL · MTS · GD — practice anywhere, fully offline.</p>
+          <p>SSC CGL · CHSL · MTS · GD — practice anywhere, on any device.</p>
           <div className="hero-chips">
             <span className="hero-chip">📚 {fmt(totalQs)} questions</span>
             <span className="hero-chip">🔥 {p.streak.current}-day streak</span>
@@ -55,27 +63,8 @@ export default function Home() {
           <Link to="/practice" className="action-tile">
             <span className="icon-bubble tile-amber">📚</span>
             <strong>Question Bank</strong>
-            <span className="tile-sub">{fmt(totalQs)} offline questions</span>
+            <span className="tile-sub">{fmt(totalQs)} questions in the bank</span>
           </Link>
-        </div>
-
-        <div className="card account-card" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span className="subject-emoji" style={{ background: 'var(--primary-light)' }}>👤</span>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 800, fontSize: 14 }}>
-              {name ? `Signed in as ${auth.user.name}` : 'Guest mode'}
-            </div>
-            <div className="small muted">
-              {name
-                ? 'Progress syncs to your account online.'
-                : 'Offline only — progress stays on this device.'}
-            </div>
-          </div>
-          {name ? (
-            <button className="btn btn-outline" onClick={logout}>Logout</button>
-          ) : (
-            <Link to="/login" className="btn btn-primary" style={{ flex: 0 }}>Login</Link>
-          )}
         </div>
 
         <div className="section-title">Your stats</div>

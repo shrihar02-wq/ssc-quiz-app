@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { SUBJECTS, categoryCount, buildPracticeSet } from '../data/questions'
 import { newSession } from '../lib/session'
+import UserChip from './UserChip'
 
 const fmt = (n) => n.toLocaleString('en-IN')
 
@@ -54,6 +55,7 @@ export default function Practice() {
       <div className="topbar">
         <Link to="/" className="icon-btn">←</Link>
         <h1>Practice</h1>
+        <UserChip />
       </div>
 
       <div className="page">
