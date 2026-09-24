@@ -3,6 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { SUBJECTS, categoryCount, buildPracticeSet } from '../data/questions'
 import { newSession } from '../lib/session'
 import UserChip from './UserChip'
+import ThemeToggle from './ThemeToggle'
+import { Icon, SUBJECT_ICONS } from '../lib/icons'
 
 const fmt = (n) => n.toLocaleString('en-IN')
 
@@ -53,18 +55,27 @@ export default function Practice() {
   return (
     <div>
       <div className="topbar">
-        <Link to="/" className="icon-btn">←</Link>
+        <Link to="/" className="icon-btn">
+          <Icon name="back" size={18} />
+        </Link>
         <h1>Practice</h1>
+        <ThemeToggle />
         <UserChip />
       </div>
 
       <div className="page">
-        <input
-          className="search"
-          placeholder="🔎  Search a subject…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-        />
+        <div style={{ position: 'relative' }}>
+          <span className="search-ico">
+            <Icon name="search" size={16} />
+          </span>
+          <input
+            className="search"
+            style={{ paddingLeft: 42 }}
+            placeholder="Search a subject…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+        </div>
 
         {list.length === 0 ? (
           <div className="empty">No subjects match “{q}”.</div>
@@ -73,8 +84,8 @@ export default function Practice() {
             const total = categoryCount(s.id)
             return (
               <button key={s.id} className="subject-item" onClick={() => openSubject(s)}>
-                <span className="subject-emoji" style={{ background: `${s.color}1a` }}>
-                  {s.emoji}
+                <span className="subject-emoji" style={{ background: `${s.color}1a`, color: s.color }}>
+                  <Icon name={SUBJECT_ICONS[s.id] || 'bank'} size={22} />
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="subj-name">{s.name}</div>
@@ -83,7 +94,7 @@ export default function Practice() {
                     <span className="badge bank">{fmt(total)} questions</span>
                   </div>
                 </div>
-                <div className="chevron">›</div>
+                <Icon name="chevron" size={18} className="muted" />
               </button>
             )
           })
@@ -94,8 +105,8 @@ export default function Practice() {
         <div className="overlay" onClick={() => setShowConfig(false)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <div className="sheet-head">
-              <span className="subject-emoji" style={{ background: `${subject.color}1a` }}>
-                {subject.emoji}
+              <span className="subject-emoji" style={{ background: `${subject.color}1a`, color: subject.color }}>
+                <Icon name={SUBJECT_ICONS[subject.id] || 'bank'} size={22} />
               </span>
               <h3>{subject.name}</h3>
             </div>
@@ -141,7 +152,7 @@ export default function Practice() {
 
             {max <= 100 && (
               <div className="explanation" style={{ background: 'var(--primary-light)', borderColor: 'var(--primary)' }}>
-                <b>ℹ️ This is a curated GK bank ({fmt(max)} Qs).</b> It needs real,
+                <b>This is a curated GK bank ({fmt(max)} Qs).</b> It needs real,
                 verified questions to scale up — drop a question bank JSON into{' '}
                 <code>src/data/custom/</code> (see{' '}
                 <code>scripts/import-gk.mjs</code>) and rebuild to reach 1,000+.

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { login, register, verifyOtp, resendOtp, getAuth } from '../lib/auth'
 import { api } from '../lib/api'
 import { mergeRemoteProgress } from '../lib/store'
+import ThemeToggle from './ThemeToggle'
+import { Icon } from '../lib/icons'
 
 export default function LoginScreen() {
   const navigate = useNavigate()
@@ -119,15 +121,25 @@ export default function LoginScreen() {
   }
 
   return (
-    <div className="page" style={{ paddingTop: 48 }}>
-      <div className="hero" style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 26 }}>SSC Quiz Prep</h2>
-        <p>
-          {mode === 'otp'
-            ? 'Enter the 6-digit code we emailed you.'
-            : 'Sign in or create an account — your progress follows you.'}
-        </p>
+    <div>
+      <div className="topbar">
+        <span className="topbar-logo">
+          <Icon name="lightning" size={17} />
+        </span>
+        <h1>SSC Quiz Prep</h1>
+        <ThemeToggle />
       </div>
+
+      <div className="page" style={{ paddingTop: 16 }}>
+        <div className="hero" style={{ marginBottom: 20 }}>
+          <span className="sheen" />
+          <h2 style={{ fontSize: 26 }}>SSC Quiz Prep</h2>
+          <p>
+            {mode === 'otp'
+              ? 'Enter the 6-digit code we emailed you.'
+              : 'Sign in or create an account — your progress follows you.'}
+          </p>
+        </div>
 
       <div className="card" style={{ padding: 22 }}>
         {mode !== 'otp' ? (
@@ -253,8 +265,10 @@ export default function LoginScreen() {
       </div>
 
       <p className="small muted" style={{ textAlign: 'center', marginTop: 18 }}>
-        🔒 Your details are encrypted and never shared.
+        <Icon name="lock" size={13} style={{ verticalAlign: -2 }} /> Your details
+        are encrypted and never shared.
       </p>
+      </div>
     </div>
   )
 }

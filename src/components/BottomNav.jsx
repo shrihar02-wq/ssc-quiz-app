@@ -1,10 +1,11 @@
 import { useLocation, Link } from 'react-router-dom'
+import { Icon } from '../lib/icons'
 
 const TABS = [
-  { to: '/', emoji: '🏠', label: 'Home' },
-  { to: '/practice', emoji: '📝', label: 'Practice' },
-  { to: '/mock', emoji: '⏱️', label: 'Mock' },
-  { to: '/stats', emoji: '📈', label: 'Progress' },
+  { to: '/', icon: 'home', label: 'Home' },
+  { to: '/practice', icon: 'practice', label: 'Practice' },
+  { to: '/mock', icon: 'clock', label: 'Mock' },
+  { to: '/stats', icon: 'stats', label: 'Progress' },
 ]
 
 export default function BottomNav() {
@@ -18,7 +19,7 @@ export default function BottomNav() {
           to={t.to}
           className={`nav-item ${pathname === t.to ? 'active' : ''}`}
         >
-          <span className="nav-emoji">{t.emoji}</span>
+          <Icon name={t.icon} size={20} className="nav-ico" />
           <span>{t.label}</span>
         </Link>
       ))}

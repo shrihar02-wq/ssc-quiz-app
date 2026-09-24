@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom'
 import { SUBJECTS, categoryCount } from '../data/questions'
 import { subscribeProgress, getProgress, resetProgress } from '../lib/store'
 import UserChip from './UserChip'
+import ThemeToggle from './ThemeToggle'
+import { Icon } from '../lib/icons'
+import { ScoreTrend, WeekStrip, SubjectBars } from './Charts'
 
 function useProgress() {
   return useSyncExternalStore(subscribeProgress, getProgress)
@@ -17,8 +20,11 @@ export default function Stats() {
   return (
     <div>
       <div className="topbar">
-        <Link to="/" className="icon-btn">←</Link>
+        <Link to="/" className="icon-btn">
+          <Icon name="back" size={18} />
+        </Link>
         <h1>Progress</h1>
+        <ThemeToggle />
         <UserChip />
       </div>
 
@@ -38,9 +44,19 @@ export default function Stats() {
             <div className="lbl">Day streak</div>
           </div>
         </div>
-        <div className="small muted" style={{ marginTop: 10 }}>
-          Best streak: {p.streak.best} days · Practise at least one question a
-          day to keep it alive. Tap any subject to practise it.
+
+        <div className="small muted" style={{ marginTop: 12 }}>
+          Best streak: {p.streak.best} days · attempt at least one question a day
+          to keep it alive.
+        </div>
+
+        <div className="section-title">Charts</div>
+        <WeekStrip attempts={p.attempts} />
+        <div style={{ marginTop: 12 }}>
+          <ScoreTrend attempts={p.attempts} />
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <SubjectBars subjectStats={p.subjectStats} />
         </div>
 
         <div className="section-title">Subject-wise accuracy</div>
@@ -67,14 +83,18 @@ export default function Stats() {
                 <div className="subj-name">{s.name}</div>
                 <div className="subj-meta">
                   {st ? `${st.correct}/${st.practiced} correct` : 'Not practised yet'}
-                  {mastered && ' · ✅ done'}
+                  {mastered && (
+                    <span className="done-mark">
+                      <Icon name="check" size={13} /> done
+                    </span>
+                  )}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span className="badge bank">{total}</span>
                 <div className="small muted" style={{ marginTop: 2 }}>Qs</div>
               </div>
-              <div className="chevron">›</div>
+              <Icon name="chevron" size={18} className="muted" />
             </Link>
           )
         })}

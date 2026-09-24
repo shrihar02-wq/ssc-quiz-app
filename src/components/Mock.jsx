@@ -3,12 +3,14 @@ import { useNavigate, Link } from 'react-router-dom'
 import { buildMockSet, totalQuestions } from '../data/questions'
 import { newSession } from '../lib/session'
 import UserChip from './UserChip'
+import ThemeToggle from './ThemeToggle'
+import { Icon } from '../lib/icons'
 
 const PRESETS = [
-  { label: 'Mini Mock', qs: 25, min: 25, emoji: '⚡', desc: 'Quick 25-minute warm-up' },
-  { label: 'Half Paper', qs: 50, min: 50, emoji: '✌️', desc: '50 questions in 50 minutes' },
-  { label: 'Full Mock · CGL Tier-I', qs: 100, min: 60, emoji: '🏆', desc: 'The real SSC CGL format' },
-  { label: 'Custom', qs: 0, min: 0, emoji: '🛠️', desc: 'Pick your own size & duration' },
+  { label: 'Mini Mock', qs: 25, min: 25, icon: 'lightning', desc: 'Quick 25-minute warm-up' },
+  { label: 'Half Paper', qs: 50, min: 50, icon: 'practice', desc: '50 questions in 50 minutes' },
+  { label: 'Full Mock · CGL Tier-I', qs: 100, min: 60, icon: 'trophy', desc: 'The real SSC CGL format' },
+  { label: 'Custom', qs: 0, min: 0, icon: 'calc', desc: 'Pick your own size & duration' },
 ]
 
 export default function Mock() {
@@ -37,8 +39,11 @@ export default function Mock() {
   return (
     <div>
       <div className="topbar">
-        <Link to="/" className="icon-btn">←</Link>
+        <Link to="/" className="icon-btn">
+          <Icon name="back" size={18} />
+        </Link>
         <h1>Mock Test</h1>
+        <ThemeToggle />
         <UserChip />
       </div>
 
@@ -58,7 +63,9 @@ export default function Mock() {
             className={`mock-preset ${preset === i ? 'active' : ''}`}
             onClick={() => setPreset(i)}
           >
-            <span className="mp-emoji">{p.emoji}</span>
+            <span className="mp-emoji">
+              <Icon name={p.icon} size={22} style={{ color: 'var(--violet)' }} />
+            </span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="mp-name">{p.label}</div>
               <div className="mp-meta">
@@ -66,7 +73,11 @@ export default function Mock() {
                 {p.label !== 'Custom' ? ` · ${p.qs} Q · ${p.min} min` : ''}
               </div>
             </div>
-            {preset === i && <span className="mp-check">✓</span>}
+            {preset === i && (
+              <span className="mp-check">
+                <Icon name="check" size={14} />
+              </span>
+            )}
           </button>
         ))}
 

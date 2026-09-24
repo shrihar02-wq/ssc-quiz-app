@@ -1,13 +1,13 @@
 {
   "name": "SSC Quiz Prep",
   "short_name": "SSC Quiz",
-  "description": "Offline practice quizzes and mock tests for SSC exam preparation.",
+  "description": "SSC exam preparation with daily practice quizzes, subject mock tests and performance tracking.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f3f4f6",
-  "theme_color": "#2563eb",
+  "background_color": "#4f46e5",
+  "theme_color": "#4f46e5",
   "icons": [
     {
       "src": "icon-192.png",

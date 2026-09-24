@@ -4,6 +4,8 @@ import { SUBJECTS, totalQuestions, categoryCount } from '../data/questions'
 import { subscribeProgress, getProgress } from '../lib/store'
 import { getAuth } from '../lib/auth'
 import UserChip from './UserChip'
+import ThemeToggle from './ThemeToggle'
+import { Icon, SUBJECT_ICONS } from '../lib/icons'
 
 function useProgress() {
   return useSyncExternalStore(subscribeProgress, getProgress)
@@ -28,40 +30,56 @@ export default function Home() {
   return (
     <div>
       <div className="topbar">
-        <span className="topbar-logo">🎓</span>
+        <span className="topbar-logo">
+          <Icon name="lightning" size={17} />
+        </span>
         <h1>SSC Quiz Prep</h1>
+        <ThemeToggle />
         <UserChip />
       </div>
 
       <div className="page">
         <div className="hero">
           <span className="sheen" />
+          <span className="hero-glint" />
           <h2>{greeting()}, {name || 'Aspirant'} 👋</h2>
           <p>SSC CGL · CHSL · MTS · GD — practice anywhere, on any device.</p>
           <div className="hero-chips">
-            <span className="hero-chip">📚 {fmt(totalQs)} questions</span>
-            <span className="hero-chip">🔥 {p.streak.current}-day streak</span>
+            <span className="hero-chip">
+              <Icon name="bank" size={14} /> {fmt(totalQs)} questions
+            </span>
+            <span className="hero-chip">
+              <Icon name="fire" size={14} /> {p.streak.current}-day streak
+            </span>
           </div>
         </div>
 
         <div className="home-actions">
           <Link to="/practice" className="action-tile">
-            <span className="icon-bubble tile-blue">📝</span>
+            <span className="icon-bubble tile-blue">
+              <Icon name="practice" size={22} style={{ color: 'var(--primary-dark)' }} />
+            </span>
             <strong>Practice</strong>
             <span className="tile-sub">Topic-wise warm-ups</span>
           </Link>
           <Link to="/mock" className="action-tile">
-            <span className="icon-bubble tile-violet">⏱️</span>
+            <span className="icon-bubble tile-violet">
+              <Icon name="clock" size={22} style={{ color: 'var(--violet)' }} />
+            </span>
             <strong>Mock Test</strong>
             <span className="tile-sub">Timed full-paper test</span>
           </Link>
           <Link to="/stats" className="action-tile">
-            <span className="icon-bubble tile-green">📈</span>
+            <span className="icon-bubble tile-green">
+              <Icon name="stats" size={22} style={{ color: 'var(--success)' }} />
+            </span>
             <strong>Progress</strong>
             <span className="tile-sub">Your performance</span>
           </Link>
           <Link to="/practice" className="action-tile">
-            <span className="icon-bubble tile-amber">📚</span>
+            <span className="icon-bubble tile-amber">
+              <Icon name="bank" size={22} style={{ color: 'var(--warn)' }} />
+            </span>
             <strong>Question Bank</strong>
             <span className="tile-sub">{fmt(totalQs)} questions in the bank</span>
           </Link>
@@ -132,16 +150,18 @@ function SubjectCard({ s }) {
       <span className="ring subj-cheek" style={{ background: `conic-gradient(${s.color} ${Math.min(100, (pra / total) * 100)}%, var(--surface-2) 0)` }}>
         <span>{pra > 0 ? `${acc}%` : '0'}</span>
       </span>
-      <span className="subj-emoji" style={{ background: `${s.color}1a` }}>
-        {s.emoji}
+      <span className="subj-emoji" style={{ background: `${s.color}1a`, color: s.color }}>
+        <Icon name={SUBJECT_ICONS[s.id] || 'bank'} size={20} />
       </span>
       <div className="subj-name">{s.name}</div>
       <div className="subj-meta">
         {fmt(total)} questions{st ? ` · ${st.correct}/${st.practiced} correct` : ''}
       </div>
       <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span className={`badge ${done ? 'done' : 'bank'}`}>{done ? '✓ Done' : 'Practice'}</span>
-        <span className="small muted">›</span>
+        <span className={`badge ${done ? 'done' : 'bank'}`}>
+          {done ? <Icon name="check" size={12} /> : 'Practice'}
+        </span>
+        <Icon name="chevron" size={16} className="muted" />
       </div>
     </Link>
   )
