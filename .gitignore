@@ -1,0 +1,15 @@
+# Node / build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Android build output (rebuilt via npm run android:apk)
+android/
+
+# Backend runtime data (accounts, progress, secrets)
+server/data/
+
+# Logs & env
+*.log
+.env
+.env.*

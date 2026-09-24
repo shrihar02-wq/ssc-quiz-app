@@ -1,0 +1,19 @@
+# Render Blueprint — one-click deploy from GitHub.
+# 1. Push this repo to GitHub
+# 2. Render > New > Blueprint > connect this repo > Apply
+#
+# Creates an always-free web service running the auth + progress backend.
+
+services:
+  - type: web
+    name: ssc-quiz-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.mjs
+    plan: free
+    envVars:
+      # Keep sessions valid across restarts (data files are ephemeral on free tier).
+      - key: JWT_SECRET
+        generateValue: true
+    healthCheckPath: /api/health
