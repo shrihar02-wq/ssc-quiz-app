@@ -53,6 +53,12 @@ export async function resendOtp(email) {
   return api('/api/auth/resend-otp', 'POST', { email })
 }
 
+// Check whether an email is already registered, without creating anything.
+export async function emailExists(email) {
+  const data = await api(`/api/auth/check-email?email=${encodeURIComponent(email)}`)
+  return !!data.exists
+}
+
 // Login. If the account isn't verified yet the server responds 403 with
 // meta.needsOtp = true, and the login screen switches to the OTP step.
 export async function login(email, password) {

@@ -372,6 +372,14 @@ const server = createServer(async (req, res) => {
       return res.end()
     }
 
+    // ---- Check if an email is already registered (for signup UX) ----
+    if (path === '/api/auth/check-email' && req.method === 'GET') {
+      const email = String(url.searchParams.get('email') || '').trim().toLowerCase()
+      if (!validEmail(email)) return send(res, 400, { error: 'Please enter a valid email.' })
+      const exists = dbUsers().users.some((u) => u.email === email)
+      return send(res, 200, { email, exists })
+    }
+
     // ---- Register (creates unverified user + sends OTP) ----
     if (path === '/api/auth/register' && req.method === 'POST') {
       const body = await readBody(req)

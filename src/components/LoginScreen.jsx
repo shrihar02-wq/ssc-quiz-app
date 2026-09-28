@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { login, register, verifyOtp, resendOtp, getAuth } from '../lib/auth'
+import { login, register, verifyOtp, resendOtp, emailExists, getAuth } from '../lib/auth'
 import { api } from '../lib/api'
 import { mergeRemoteProgress } from '../lib/store'
 import ThemeToggle from './ThemeToggle'
@@ -13,6 +13,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [emailTaken, setEmailTaken] = useState(false)
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
   const [devOtp, setDevOtp] = useState(null)
@@ -55,6 +56,13 @@ export default function LoginScreen() {
         }
         await finishSignup()
       } else {
+        // Don't create anything if the email is already registered.
+        const exists = await emailExists(email)
+        if (exists) {
+          setError('This email is already registered. Please log in instead.')
+          setMode('login')
+          return
+        }
         const r = await register(name, email, password)
         setNotice(r.otpSent ? '' : '')
         if (r.devOtp) setDevOtp(r.devOtp)
@@ -187,7 +195,16 @@ export default function LoginScreen() {
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); if (mode === 'register') setEmailTaken(false) }}
+                  onBlur={async (e) => {
+                    if (mode !== 'register') return
+                    const val = e.target.value.trim()
+                    if (!val) return
+                    setEmailTaken(false)
+                    try {
+                      if (await emailExists(val)) setEmailTaken(true)
+                    } catch { /* ignore network hiccups */ }
+                  }}
                 />
               </div>
 
@@ -206,6 +223,12 @@ export default function LoginScreen() {
               {error && (
                 <div className="explanation" style={{ background: 'var(--danger-light)', borderColor: 'var(--danger)', color: 'var(--text)' }}>
                   {error}
+                </div>
+              )}
+
+              {emailTaken && (
+                <div className="explanation" style={{ background: 'var(--warn-light, rgba(245,158,11,.14))', borderColor: 'var(--warn)' }}>
+                  This email is already registered — <b>log in</b> instead. No need to create a new account.
                 </div>
               )}
 
