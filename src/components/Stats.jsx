@@ -9,6 +9,7 @@ import { useCountUp } from '../lib/anim'
 import { setOverlay } from '../lib/layout'
 import { Icon } from '../lib/icons'
 import { ScoreTrend, WeekStrip, SubjectBars } from './Charts'
+import { getUsage, subscribeUsage, todayKey } from '../lib/usage'
 
 function useProgress() {
   return useSyncExternalStore(subscribeProgress, getProgress)
@@ -16,6 +17,36 @@ function useProgress() {
 
 function ringColor(v) {
   return v >= 60 ? 'var(--success)' : v >= 35 ? 'var(--warn)' : 'var(--danger)'
+}
+
+function fmtTime(sec) {
+  sec = Math.max(0, Math.floor(sec))
+  if (sec < 60) return `${sec}s`
+  const m = Math.floor(sec / 60)
+  if (m < 60) return `${m}m`
+  const h = Math.floor(m / 60)
+  return `${h}h ${m % 60}m`
+}
+
+function TimeCard() {
+  const usage = useSyncExternalStore(subscribeUsage, getUsage)
+  const today = usage.totals?.[todayKey()] || 0
+  return (
+    <div className="time-card">
+      <span className="time-ico">
+        <Icon name="clock" size={20} />
+      </span>
+      <div>
+        <div className="time-big">{fmtTime(usage.seconds)}</div>
+        <div className="time-lbl">Total time in app</div>
+      </div>
+      <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+        <div className="time-big today">{fmtTime(today)}</div>
+        <div className="time-lbl">Today</div>
+      </div>
+      <span className="time-dot" title="Live" />
+    </div>
+  )
 }
 
 function OverviewCard({ p, accuracy }) {
@@ -110,6 +141,7 @@ export default function Stats() {
       <div className="page">
         <div className="section-title">Overview</div>
         <OverviewCard p={p} accuracy={accuracy} />
+        <TimeCard />
 
         <div className="stat-row four">
           <StatCard icon="stats" value={p.attempts.length} label="Attempts" accent="var(--primary)" />

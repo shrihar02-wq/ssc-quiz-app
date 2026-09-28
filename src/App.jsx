@@ -11,6 +11,7 @@ import IntroSplash from './components/IntroSplash'
 import BackHandler from './components/BackHandler'
 import ScrollToTop from './components/ScrollToTop'
 import { useAuth } from './lib/auth'
+import './lib/usage'
 
 const NAV_HIDDEN = ['/quiz', '/login']
 
