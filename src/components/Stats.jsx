@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
 import { Link } from 'react-router-dom'
 import { SUBJECTS, categoryCount } from '../data/questions'
@@ -6,6 +6,7 @@ import { subscribeProgress, getProgress, resetProgress } from '../lib/store'
 import UserChip from './UserChip'
 import ThemeToggle from './ThemeToggle'
 import { useCountUp } from '../lib/anim'
+import { setOverlay } from '../lib/layout'
 import { Icon } from '../lib/icons'
 import { ScoreTrend, WeekStrip, SubjectBars } from './Charts'
 
@@ -89,6 +90,11 @@ export default function Stats() {
   const p = useProgress()
   const [confirm, setConfirm] = useState(false)
   const accuracy = p.answered ? Math.round((p.correct / p.answered) * 100) : 0
+
+  // Hide the bottom nav while the confirm dialog is open.
+  useEffect(() => {
+    setOverlay(confirm)
+  }, [confirm])
 
   return (
     <div>

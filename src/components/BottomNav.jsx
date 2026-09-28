@@ -1,5 +1,6 @@
 import { useLocation, Link } from 'react-router-dom'
 import { Icon } from '../lib/icons'
+import { useOverlay } from '../lib/layout'
 
 const TABS = [
   { to: '/', icon: 'home', label: 'Home' },
@@ -10,6 +11,7 @@ const TABS = [
 
 export default function BottomNav() {
   const { pathname } = useLocation()
+  if (useOverlay()) return null
 
   return (
     <nav className="bottom-nav">

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { SUBJECTS, categoryCount, buildPracticeSet } from '../data/questions'
 import { newSession } from '../lib/session'
+import { setOverlay } from '../lib/layout'
 import UserChip from './UserChip'
 import ThemeToggle from './ThemeToggle'
 import { Icon, SUBJECT_ICONS } from '../lib/icons'
@@ -21,6 +22,13 @@ export default function Practice() {
   )
   const [showExplanations, setShowExplanations] = useState(true)
   const [q, setQ] = useState('')
+
+  // Hide the bottom nav while the config sheet is open so the
+  // "Start Practice" button is never covered.
+  useEffect(() => {
+    setOverlay(showConfig)
+    return () => setOverlay(false)
+  }, [showConfig])
 
   function openSubject(s) {
     setSubject(s)
