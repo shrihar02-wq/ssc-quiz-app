@@ -1,7 +1,112 @@
+import { useSyncExternalStore } from 'react'
 import { SUBJECTS } from '../data/questions'
 import { Icon, SUBJECT_ICONS } from '../lib/icons'
+import { getUsage, subscribeUsage } from '../lib/usage'
 
 const fmt = (n) => n.toLocaleString('en-IN')
+
+const fmtShort = (sec) => {
+  sec = Math.max(0, Math.floor(sec))
+  if (sec < 60) return `${sec}s`
+  const m = Math.floor(sec / 60)
+  if (m < 60) return `${m}m`
+  const h = Math.floor(m / 60)
+  const r = m % 60
+  return h && r ? `${h}h ${r}m` : `${h || m}h`
+}
+
+const dayOf = (d) =>
+  d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
+
+// ---- Daily time chart: time in app (stacked with time in tests) ----
+export function TimeChart({ attempts }) {
+  const usage = useSyncExternalStore(subscribeUsage, getUsage)
+  const totals = usage?.totals || {}
+
+  const days = []
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(start)
+    d.setDate(start.getDate() - i)
+    const key = dayOf(d)
+    days.push({
+      d,
+      key,
+      appSec: Math.floor(totals[key] || 0),
+      testSec: attempts
+        .filter((a) => dayOf(new Date(a.ts)) === key)
+        .reduce((s, a) => s + (a.durationSec || 0), 0),
+    })
+  }
+
+  const weekApp = days.reduce((s, x) => s + x.appSec, 0)
+  const weekTest = days.reduce((s, x) => s + x.testSec, 0)
+  const max = Math.max(1, ...days.map((x) => Math.max(x.appSec, x.testSec)))
+  const today = new Date().getDate()
+  const wd = (d) => d.toLocaleDateString('en', { weekday: 'narrow' })
+
+  if (weekApp + weekTest === 0) {
+    return (
+      <div className="card">
+        <div className="chart-head">
+          <span>Time this week</span>
+          <span className="badge bank">7 days</span>
+        </div>
+        <div className="chart-empty">
+          <Icon name="clock" size={20} style={{ opacity: 0.5 }} />
+          <span style={{ display: 'block', marginTop: 6 }}>
+            Time you spend in the app and in tests shows up here
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card time-week-card">
+      <div className="chart-head">
+        <span>Time this week</span>
+        <span className="badge bank">
+          <Icon name="clock" size={13} /> {fmtShort(weekApp)} total
+        </span>
+      </div>
+      <div className="week-grid">
+        {days.map((x) => {
+          const appH = Math.max(0, (x.appSec / max) * 58)
+          const testH = Math.max(0, (x.testSec / max) * 58)
+          return (
+            <div className="week-col" key={x.key}>
+              <span className="week-wd">{wd(x.d)}</span>
+              <div className="time-bar-wrap">
+                {appH > 0 && (
+                  <div className="time-bar app" style={{ height: `${appH}px` }} title={`${fmtShort(x.appSec)} in app`}>
+                    {testH > 0 && (
+                      <div
+                        className="time-bar test"
+                        style={{ height: `${Math.min(appH, testH)}px` }}
+                        title={`${fmtShort(x.testSec)} in tests`}
+                      />
+                    )}
+                  </div>
+                )}
+                {appH === 0 && testH === 0 && <div className="time-bar zero" />}
+              </div>
+              <span className={`week-day ${x.d.getDate() === today ? 'today' : ''}`}>{x.d.getDate()}</span>
+            </div>
+          )
+        })}
+      </div>
+      <div className="chart-legend">
+        <span>
+          <i style={{ background: 'linear-gradient(180deg,#6366f1,#a78bfa)' }} /> In app ·{' '}
+          <i style={{ background: 'linear-gradient(180deg,#22c55e,#4ade80)' }} /> In tests
+        </span>
+        <span>{fmtShort(weekTest)} in tests</span>
+      </div>
+    </div>
+  )
+}
 
 // ---- Score trend line chart (last N attempts) with average line ----
 export function ScoreTrend({ attempts, maxPoints = 15 }) {

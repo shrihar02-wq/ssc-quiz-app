@@ -112,11 +112,16 @@ export default function Practice() {
       {showConfig && subject && (
         <div className="overlay" onClick={() => setShowConfig(false)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="sheet-head">
-              <span className="subject-emoji" style={{ background: `${subject.color}1a`, color: subject.color }}>
-                <Icon name={SUBJECT_ICONS[subject.id] || 'bank'} size={22} />
+            <div className="sheet-head" style={{ background: `linear-gradient(135deg, ${subject.color}29, transparent 70%)` }}>
+              <span className="sheet-banner-ico" style={{ background: `${subject.color}1f`, color: subject.color, borderColor: `${subject.color}55` }}>
+                <Icon name={SUBJECT_ICONS[subject.id] || 'bank'} size={28} />
               </span>
-              <h3>{subject.name}</h3>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3>{subject.name}</h3>
+                <div className="sheet-banner-sub">
+                  {subject.blurb} · {fmt(max)} questions
+                </div>
+              </div>
               <button className="sheet-close" onClick={() => setShowConfig(false)} aria-label="Close">
                 <Icon name="close" size={16} />
               </button>

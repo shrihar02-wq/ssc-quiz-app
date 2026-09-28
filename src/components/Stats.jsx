@@ -8,7 +8,7 @@ import ThemeToggle from './ThemeToggle'
 import { useCountUp } from '../lib/anim'
 import { setOverlay } from '../lib/layout'
 import { Icon } from '../lib/icons'
-import { ScoreTrend, WeekStrip, SubjectBars } from './Charts'
+import { ScoreTrend, WeekStrip, TimeChart, SubjectBars } from './Charts'
 import { getUsage, subscribeUsage, todayKey } from '../lib/usage'
 
 function useProgress() {
@@ -155,7 +155,10 @@ export default function Stats() {
         </div>
 
         <div className="section-title">Charts</div>
-        <WeekStrip attempts={p.attempts} />
+        <TimeChart attempts={p.attempts} />
+        <div style={{ marginTop: 12 }}>
+          <WeekStrip attempts={p.attempts} />
+        </div>
         <div style={{ marginTop: 12 }}>
           <ScoreTrend attempts={p.attempts} />
         </div>

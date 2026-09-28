@@ -43,6 +43,19 @@ export default function Results() {
     [passed]
   )
 
+  const sparks = useMemo(
+    () =>
+      passed &&
+      particleArray(10, (i) => ({
+        left: 5 + Math.random() * 90,
+        top: 18 + Math.random() * 45,
+        delay: Math.random() * 3,
+        dur: 3 + Math.random() * 2.5,
+        emoji: ['✨', '⭐', '🎉', '💫', '🌟', '🔥'][i % 6],
+      })),
+    [passed]
+  )
+
   const anim = useCountUp(result?.score || 0, 1500)
 
   if (!result) {
@@ -109,6 +122,25 @@ export default function Results() {
 
       <div className="page">
         <div className={'verdict-hero ' + (passed ? 'pass' : 'fail')}>
+          <div className="aura">
+            <span className="aura-orb" />
+            {sparks &&
+              sparks.map((s, i) => (
+                <span
+                  key={`s${i}`}
+                  className="spark"
+                  style={{
+                    left: `${s.left}%`,
+                    top: `${s.top}%`,
+                    animationDelay: `${s.delay}s`,
+                    animationDuration: `${s.dur}s`,
+                  }}
+                >
+                  {s.emoji}
+                </span>
+              ))}
+          </div>
+
           <div className="verdict-mascot pop">{passed ? '🏆' : '😅'}</div>
 
           <div className={'verdict-badge ' + (passed ? 'pass' : 'fail')}>
@@ -123,6 +155,7 @@ export default function Results() {
             className="score-hero-ring"
             style={{ '--ring': `${anim * 3.6}deg`, '--tick-rot': `${PASS_MARK * 3.6}deg` }}
           >
+            <span className="rays" />
             <div className="ring-glow" style={{ '--glow': verdictColor }} />
             <span className="ring-tick" style={{ '--tick-color': 'var(--success)' }} />
             {!passed && (
@@ -137,7 +170,9 @@ export default function Results() {
             </div>
           </div>
 
-          <p className="verdict-title">{passed ? 'Absolutely crushing it! 🎉' : 'Tough one — don’t give up! 💪'}</p>
+          <p className={`verdict-title ${passed ? 'pass' : ''}`}>
+            <span className="vt-shimmer">{passed ? 'Absolutely crushing it! 🎉' : 'Tough one — don’t give up! 💪'}</span>
+          </p>
           <p className="verdict-sub">
             {passed
               ? `You beat the ${PASS_MARK}% pass mark by ${above}% points. Brilliant work — keep the streak going!`
