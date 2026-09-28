@@ -1,21 +1,49 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getLastResult, clearSession } from '../lib/session'
 import { CATEGORY } from '../data/questions'
 import { Icon, SUBJECT_ICONS } from '../lib/icons'
+import { useCountUp } from '../lib/anim'
 
-const CONF = Array.from({ length: 42 }, (_, i) => ({
-  left: Math.random() * 100,
-  delay: Math.random() * 0.9,
-  dur: 2.4 + Math.random() * 2,
-  size: 6 + Math.random() * 7,
-  color: ['#f472b6', '#818cf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa'][i % 6],
-}))
+const PASS_MARK = 60
+
+function particleArray(n, gen) {
+  return Array.from({ length: n }, (_, i) => gen(i))
+}
 
 export default function Results() {
   const navigate = useNavigate()
   const result = useMemo(() => getLastResult(), [])
-  const [party] = useState(result && result.score >= 60)
+  const passed = !!result && result.score >= PASS_MARK
+
+  const confetti = useMemo(
+    () =>
+      passed &&
+      particleArray(70, (i) => ({
+        left: Math.random() * 100,
+        delay: Math.random() * 1.1,
+        dur: 2.6 + Math.random() * 2.4,
+        size: 6 + Math.random() * 8,
+        rot: Math.random() * 200,
+        color: ['#f472b6', '#818cf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa', '#e879f9'][i % 7],
+      })),
+    [passed]
+  )
+
+  const drizzle = useMemo(
+    () =>
+      !passed &&
+      particleArray(34, (i) => ({
+        left: Math.random() * 100,
+        delay: Math.random() * 2.4,
+        dur: 3.2 + Math.random() * 2.2,
+        size: 2 + Math.random() * 2,
+        sway: 10 + Math.random() * 30,
+      })),
+    [passed]
+  )
+
+  const anim = useCountUp(result?.score || 0, 1500)
 
   if (!result) {
     return (
@@ -28,16 +56,10 @@ export default function Results() {
     )
   }
 
-  const cls = result.score >= 60 ? 'good' : result.score >= 35 ? 'mid' : 'bad'
-  const color = result.score >= 60 ? 'var(--success)' : result.score >= 35 ? 'var(--warn)' : 'var(--danger)'
-  const verb =
-    result.score >= 60
-      ? 'Great job, keep it up!'
-      : result.score >= 35
-      ? 'Good effort — review and retry.'
-      : 'Needs work — practice more of this topic.'
-  const head =
-    result.score >= 60 ? 'Passed!' : result.score >= 35 ? 'Almost there' : 'Keep practising'
+  const score = result.score
+  const gap = Math.max(0, PASS_MARK - score)
+  const above = Math.max(0, score - PASS_MARK)
+  const verdictColor = passed ? 'var(--success)' : 'var(--danger)'
 
   return (
     <div>
@@ -48,9 +70,9 @@ export default function Results() {
         </button>
       </div>
 
-      {party && (
+      {confetti && (
         <div className="confetti" aria-hidden>
-          {CONF.map((c, i) => (
+          {confetti.map((c, i) => (
             <span
               key={i}
               style={{
@@ -63,21 +85,66 @@ export default function Results() {
               }}
             />
           ))}
+          <span className="burst" />
+        </div>
+      )}
+
+      {drizzle && (
+        <div className="drizzle" aria-hidden>
+          {drizzle.map((c, i) => (
+            <span
+              key={i}
+              style={{
+                left: `${c.left}%`,
+                width: c.size,
+                height: c.size * 5,
+                animationDelay: `${c.delay}s`,
+                animationDuration: `${c.dur}s`,
+                '--sway': `${c.sway}px`,
+              }}
+            />
+          ))}
         </div>
       )}
 
       <div className="page">
-        <div className="card">
-          <div className="result-score">
-            <div className={`score-ring ${cls}`} style={{ background: `conic-gradient(${color} ${result.score * 3.6}deg, var(--surface-2) 0deg)` }}>
-              <span className={`big ${cls}`}>{result.score}%</span>
-            </div>
-            <p>
-              {head}{result.score >= 60 ? ' 🎉' : ''} · {verb}
-            </p>
+        <div className={'verdict-hero ' + (passed ? 'pass' : 'fail')}>
+          <div className="verdict-mascot pop">{passed ? '🏆' : '😅'}</div>
+
+          <div className={'verdict-badge ' + (passed ? 'pass' : 'fail')}>
+            <span className="vb-text">
+              <Icon name={passed ? 'trophy' : 'target'} size={18} />
+              {passed ? 'PASSED' : 'BELOW PASS MARK'}
+            </span>
+            <span className="vb-sheen" />
           </div>
 
-          <div className="metric-grid">
+          <div
+            className="score-hero-ring"
+            style={{ '--ring': `${anim * 3.6}deg`, '--tick-rot': `${PASS_MARK * 3.6}deg` }}
+          >
+            <div className="ring-glow" style={{ '--glow': verdictColor }} />
+            <span className="ring-tick" style={{ '--tick-color': 'var(--success)' }} />
+            {!passed && (
+              <span
+                className="ring-tick r-you"
+                style={{ '--tick-rot': `${score * 3.6}deg`, '--tick-color': 'var(--danger)' }}
+              />
+            )}
+            <div className="score-hero-inner">
+              <span className={`hero-score ${passed ? 'good' : 'bad'}`}>{anim}%</span>
+              <span className="hero-label">SCORE</span>
+            </div>
+          </div>
+
+          <p className="verdict-title">{passed ? 'Absolutely crushing it! 🎉' : 'Tough one — don’t give up! 💪'}</p>
+          <p className="verdict-sub">
+            {passed
+              ? `You beat the ${PASS_MARK}% pass mark by ${above}% points. Brilliant work — keep the streak going!`
+              : `You need ${gap}% more to cross the ${PASS_MARK}% pass mark. Review your answers and try again — you’ve got this!`}
+          </p>
+
+          <div className="metric-grid stagger">
             <div className="stat">
               <div className="num" style={{ color: 'var(--success)' }}>{result.correct}</div>
               <div className="lbl">Correct</div>

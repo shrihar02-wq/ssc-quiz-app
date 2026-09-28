@@ -1781,6 +1781,349 @@ a {
   --sway: 60px;
 }
 
+/* ---- Result verdict hero (pass / fail) ---- */
+.verdict-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 28px 20px 22px;
+  margin-bottom: 16px;
+  text-align: center;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.verdict-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% -20%,
+      var(--hero-glow, rgba(34, 197, 94, 0.16)),
+      transparent 60%);
+  animation: verdictFloat 3.5s ease-in-out infinite;
+}
+
+.verdict-hero.pass {
+  --hero-glow: rgba(34, 197, 94, 0.18);
+  border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+}
+
+.verdict-hero.fail {
+  --hero-glow: rgba(239, 68, 68, 0.14);
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+}
+
+.verdict-mascot {
+  position: relative;
+  font-size: 72px;
+  line-height: 1;
+  display: inline-block;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.18));
+}
+
+.verdict-hero.pass .verdict-mascot {
+  animation: mascotSpring 0.9s cubic-bezier(0.34, 1.56, 0.6, 1), mascotSpin 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.9s;
+}
+
+.verdict-hero.fail .verdict-mascot {
+  animation: mascotSpring 0.9s cubic-bezier(0.34, 1.56, 0.6, 1), sadSway 2.8s ease-in-out 1s infinite;
+}
+
+.vb-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.verdict-badge {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  margin: 14px auto 18px;
+  padding: 10px 22px;
+  border-radius: 40px;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #fff;
+  animation: mascotSpring 0.8s cubic-bezier(0.34, 1.56, 0.6, 1) 0.15s both;
+}
+
+.verdict-badge.pass {
+  background: linear-gradient(120deg, #16a34a, #4ade80 55%, #16a34a);
+  box-shadow: 0 6px 22px rgba(22, 163, 74, 0.45);
+}
+
+.verdict-badge.fail {
+  background: linear-gradient(120deg, #dc2626, #ef4444 55%, #dc2626);
+  box-shadow: 0 6px 22px rgba(220, 38, 38, 0.4);
+}
+
+.vb-sheen {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  width: 34%;
+  left: -45%;
+  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: sheenSweep 2.1s ease-in-out 0.5s infinite;
+}
+
+/* Massive animated score ring */
+.score-hero-ring {
+  --ring: 0deg;
+  --tick-rot: 216deg;
+  position: relative;
+  width: 232px;
+  height: 232px;
+  margin: 4px auto 6px;
+  border-radius: 50%;
+  background: conic-gradient(var(--ring-color, var(--success)) var(--ring), var(--surface-2) 0deg);
+  box-shadow: var(--shadow-md);
+  animation: ringPop 0.9s cubic-bezier(0.34, 1.56, 0.6, 1) both;
+}
+
+.verdict-hero.fail .score-hero-ring {
+  --ring-color: var(--danger);
+}
+
+.ring-glow {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: var(--glow);
+  filter: blur(22px);
+  opacity: 0.5;
+  animation: verdictFloat 3s ease-in-out infinite;
+  z-index: 0;
+}
+
+.score-hero-inner {
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.hero-score {
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-score.good {
+  background: linear-gradient(120deg, #16a34a, #4ade80);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(34, 197, 94, 0.35));
+}
+
+.hero-score.bad {
+  background: linear-gradient(120deg, #dc2626, #f87171);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.35));
+}
+
+.hero-label {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  color: var(--text-muted);
+}
+
+/* Pass-mark tick on the ring (fixed at 60%) + your-score tick on fail */
+.ring-tick {
+  --tick-rot: 216deg;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 14px;
+  margin: -7px 0 0 -1.5px;
+  border-radius: 3px;
+  background: var(--tick-color, var(--success));
+  box-shadow: 0 0 8px var(--tick-color, var(--success));
+  transform-origin: 50% 50%;
+  transform: rotate(var(--tick-rot)) translateY(-112px);
+  z-index: 2;
+}
+
+.ring-tick.r-you {
+  height: 20px;
+  margin-top: -10px;
+}
+
+.verdict-title {
+  margin: 14px 0 6px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.verdict-sub {
+  margin: 0 auto 16px;
+  max-width: 340px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.metric-grid .stat {
+  animation: statIn 0.6s cubic-bezier(0.34, 1.56, 0.6, 1) both;
+}
+
+.metric-grid .stat:nth-child(1) {
+  animation-delay: 0.7s;
+}
+.metric-grid .stat:nth-child(2) {
+  animation-delay: 0.85s;
+}
+.metric-grid .stat:nth-child(3) {
+  animation-delay: 1s;
+}
+
+/* Fail drizzle — muted weeping streaks */
+.drizzle {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.drizzle span {
+  position: absolute;
+  top: -30px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.75), rgba(148, 163, 184, 0.05));
+  animation-name: drizzleFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes drizzleFall {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(var(--sway, 15px), 112vh, 0);
+    opacity: 0.15;
+  }
+}
+
+/* Pass burst ring in the centre */
+.burst {
+  position: absolute;
+  left: 50%;
+  top: 32%;
+  width: 260px;
+  height: 260px;
+  margin: -130px 0 0 -130px;
+  border-radius: 50%;
+  border: 2px solid rgba(250, 204, 21, 0.7);
+  animation: burstOut 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes burstOut {
+  0% {
+    transform: scale(0.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes mascotSpring {
+  0% {
+    transform: scale(0.2) translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes mascotSpin {
+  0% {
+    transform: scale(1) rotate(0);
+  }
+  45% {
+    transform: scale(1.16) rotate(12deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes sadSway {
+  0%, 100% {
+    transform: rotate(-8deg) translateY(0);
+  }
+  50% {
+    transform: rotate(8deg) translateY(4px);
+  }
+}
+
+@keyframes sheenSweep {
+  0% {
+    left: -45%;
+  }
+  55%, 100% {
+    left: 115%;
+  }
+}
+
+@keyframes verdictFloat {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+@keyframes ringPop {
+  0% {
+    transform: scale(0.5) translateY(24px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes statIn {
+  0% {
+    transform: translateY(16px) scale(0.96);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
 /* ---- OTP input ---- */
 .otp-row {
   display: flex;
@@ -2422,7 +2765,14 @@ button:disabled {
   .hero-logo,
   .empty-ico,
   .hero-logo-sheen,
-  .page-swap {
+  .page-swap,
+  .verdict-hero,
+  .verdict-mascot,
+  .verdict-badge,
+  .score-hero-ring,
+  .ring-glow,
+  .metric-grid .stat,
+  .burst {
     animation: none !important;
     transition: none !important;
   }
