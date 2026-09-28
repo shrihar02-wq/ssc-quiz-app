@@ -5,11 +5,84 @@ import { SUBJECTS, categoryCount } from '../data/questions'
 import { subscribeProgress, getProgress, resetProgress } from '../lib/store'
 import UserChip from './UserChip'
 import ThemeToggle from './ThemeToggle'
+import { useCountUp } from '../lib/anim'
 import { Icon } from '../lib/icons'
 import { ScoreTrend, WeekStrip, SubjectBars } from './Charts'
 
 function useProgress() {
   return useSyncExternalStore(subscribeProgress, getProgress)
+}
+
+function ringColor(v) {
+  return v >= 60 ? 'var(--success)' : v >= 35 ? 'var(--warn)' : 'var(--danger)'
+}
+
+function OverviewCard({ p, accuracy }) {
+  const R = 52
+  const C = 2 * Math.PI * R
+  const shown = useCountUp(accuracy, 900)
+  const answered = useCountUp(p.answered)
+  const cur = useCountUp(p.streak.current)
+  const best = useCountUp(p.streak.best)
+  return (
+    <div className="overview-card">
+      <svg width="128" height="128" viewBox="0 0 128 128" className="overview-ring">
+        <circle cx="64" cy="64" r={R} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="9" />
+        <circle
+          cx="64"
+          cy="64"
+          r={R}
+          fill="none"
+          stroke="url(#ovrGrad)"
+          strokeWidth="9"
+          strokeLinecap="round"
+          strokeDasharray={C}
+          strokeDashoffset={C - (accuracy / 100) * C}
+          transform="rotate(-90 64 64)"
+        />
+        <defs>
+          <linearGradient id="ovrGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#fff" />
+            <stop offset="100%" stopColor="#f0abfc" stopOpacity="0.85" />
+          </linearGradient>
+        </defs>
+        <text x="64" y="60" textAnchor="middle" fill="#fff" fontSize="30" fontWeight="800">
+          {shown}%
+        </text>
+        <text x="64" y="78" textAnchor="middle" fill="rgba(255,255,255,0.75)" fontSize="11" fontWeight="600">
+          accuracy
+        </text>
+      </svg>
+      <div className="overview-info">
+        <span className="overview-eyebrow">Lifetime</span>
+        <div className="overview-big">
+          <span className="overview-num">{answered}</span>
+          <span>questions answered</span>
+        </div>
+        <div className="overview-chips">
+          <span className="overview-chip">
+            <Icon name="fire" size={14} /> {cur}-day streak
+          </span>
+          <span className="overview-chip">
+            <Icon name="award" size={14} /> best {best}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StatCard({ icon, value, label, accent }) {
+  const v = useCountUp(value)
+  return (
+    <div className="stat">
+      <span className="stat-ico" style={{ color: accent, background: `${accent}1a` }}>
+        <Icon name={icon} size={16} />
+      </span>
+      <div className="num" style={{ color: accent }}>{v}</div>
+      <div className="lbl">{label}</div>
+    </div>
+  )
 }
 
 export default function Stats() {
@@ -30,24 +103,17 @@ export default function Stats() {
 
       <div className="page">
         <div className="section-title">Overview</div>
-        <div className="stat-row">
-          <div className="stat">
-            <div className="num">{p.answered}</div>
-            <div className="lbl">Answered</div>
-          </div>
-          <div className="stat">
-            <div className="num">{accuracy}%</div>
-            <div className="lbl">Accuracy</div>
-          </div>
-          <div className="stat">
-            <div className="num">{p.streak.current}</div>
-            <div className="lbl">Day streak</div>
-          </div>
+        <OverviewCard p={p} accuracy={accuracy} />
+
+        <div className="stat-row four">
+          <StatCard icon="stats" value={p.attempts.length} label="Attempts" accent="var(--primary)" />
+          <StatCard icon="trendup" value={p.answered} label="Answered" accent="var(--violet)" />
+          <StatCard icon="fire" value={p.streak.current} label="Day streak" accent="var(--warn)" />
+          <StatCard icon="award" value={p.streak.best} label="Best streak" accent="var(--success)" />
         </div>
 
         <div className="small muted" style={{ marginTop: 12 }}>
-          Best streak: {p.streak.best} days · attempt at least one question a day
-          to keep it alive.
+          Answer at least one question each day to keep your streak alive.
         </div>
 
         <div className="section-title">Charts</div>
@@ -101,12 +167,28 @@ export default function Stats() {
 
         <div className="section-title">Recent attempts</div>
         {p.attempts.length === 0 ? (
-          <div className="empty">No attempts recorded yet.</div>
+          <div className="empty">
+            <Icon name="stats" size={30} style={{ opacity: 0.35, marginBottom: 8 }} />
+            <div>No attempts recorded yet.</div>
+            <div className="small muted" style={{ marginTop: 4 }}>
+              Take a practice session or a mock test to start tracking.
+            </div>
+          </div>
         ) : (
           p.attempts.slice(0, 10).map((a) => (
             <div className="attempt-item" key={a.id}>
-              <div>
-                <div className="t">{a.label}</div>
+              <span
+                className={`attempt-ico ${a.type === 'mock' ? 'mock' : 'practice'}`}
+              >
+                <Icon name={a.type === 'mock' ? 'clock' : 'pencil'} size={14} />
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="t">
+                  {a.label}
+                  <span className={`pill-mini ${a.type === 'mock' ? 'mock' : 'practice'}`}>
+                    {a.type === 'mock' ? 'Mock' : 'Practice'}
+                  </span>
+                </div>
                 <div className="s">
                   {new Date(a.ts).toLocaleString(undefined, {
                     day: 'numeric',
@@ -114,6 +196,15 @@ export default function Stats() {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
+                </div>
+                <div className="attempt-track">
+                  <div
+                    className="attempt-fill"
+                    style={{
+                      width: `${Math.min(100, a.score)}%`,
+                      background: ringColor(a.score),
+                    }}
+                  />
                 </div>
               </div>
               <span className={`pill ${a.score >= 60 ? 'good' : a.score >= 35 ? 'mid' : 'bad'}`}>
@@ -125,7 +216,7 @@ export default function Stats() {
 
         <button
           className="btn btn-outline btn-block"
-          style={{ color: 'var(--danger)' }}
+          style={{ color: 'var(--danger)', marginTop: 18 }}
           onClick={() => setConfirm(true)}
         >
           Reset all progress

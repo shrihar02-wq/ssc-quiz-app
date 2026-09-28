@@ -152,6 +152,26 @@ const P = {
     </>
   ),
   lightning: <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />,
+  trendup: (
+    <>
+      <path d="M3 17l6-6 4 4 8-8" />
+      <path d="M15 7h6v6" />
+    </>
+  ),
+  award: (
+    <>
+      <circle cx="12" cy="9" r="6" />
+      <path d="M8.5 14 7 22l5-3 5 3-1.5-8" />
+      <path d="M9 19h6" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+    </>
+  ),
 }
 
 // subject id -> icon name (crisp vector glyph replaces the emoji)

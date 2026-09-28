@@ -1822,3 +1822,522 @@ button:disabled {
 .action-tile:hover .icon-bubble {
   transform: scale(1.08) rotate(-4deg);
 }
+
+/* ---- App-open logo animation (IntroSplash) ---- */
+.intro-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  background: linear-gradient(145deg, #4338ca 0%, #6d28d9 52%, #9333ea 100%);
+  overflow: hidden;
+}
+
+.intro-orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 70%);
+  filter: blur(2px);
+}
+
+.intro-orb-a {
+  width: 340px;
+  height: 340px;
+  top: -120px;
+  left: -80px;
+}
+
+.intro-orb-b {
+  width: 300px;
+  height: 300px;
+  bottom: -110px;
+  right: -60px;
+}
+
+.intro-logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  animation: introFloat 2.6s ease-in-out infinite;
+}
+
+.intro-ring {
+  position: absolute;
+  inset: -18px;
+  border-radius: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  animation: ringPulse 1.4s ease-out infinite;
+  pointer-events: none;
+}
+
+.intro-tile {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  border-radius: 30px;
+  background: linear-gradient(150deg, #ffffff 0%, #e0e7ff 100%);
+  box-shadow: 0 24px 60px rgba(15, 9, 60, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.5);
+  display: grid;
+  place-items: center;
+  color: #4338ca;
+  overflow: hidden;
+  animation: tileIn 0.6s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+  animation-delay: 0.05s;
+}
+
+.intro-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(99, 102, 241, 0.28) 47%, transparent 62%);
+  transform: translateX(-120%);
+  animation: sheenSweep 1.3s ease-in-out 0.5s forwards;
+}
+
+.intro-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.intro-name {
+  font-size: 24px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+
+.intro-tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.intro-splash.out {
+  animation: splashOut 0.45s ease-in forwards;
+}
+
+@keyframes tileIn {
+  0% {
+    transform: scale(0.2) rotate(-14deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: rotate(0deg) scale(0.72);
+    opacity: 0.65;
+  }
+  100% {
+    transform: rotate(90deg) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes sheenSweep {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes introFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes splashOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+/* ---- Animated hero logo (Home / Login) ---- */
+.hero-logo {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 17px;
+  background: linear-gradient(150deg, #fff 0%, #dbeafe 100%);
+  color: #4338ca;
+  box-shadow: 0 12px 30px rgba(15, 9, 60, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+  overflow: hidden;
+  animation: logoIn 0.7s cubic-bezier(0.22, 1.4, 0.36, 1) both, logoRotate 20s linear infinite;
+}
+
+.hero-logo-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(99, 102, 241, 0.35) 50%, transparent 65%);
+  transform: translateX(-130%);
+  animation: sheenSweep 1.6s ease-in-out 0.4s infinite;
+}
+
+/* ---- Logo rotation animation ---- */
+@keyframes logoRotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.hero-logo:hover {
+  transform: scale(1.05) rotate(2deg);
+}
+
+/* ---- Empty icon pulse animation ---- */
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+.empty-ico {
+  animation: pulseOpacity 2s ease-in-out infinite;
+}
+
+.hero-login {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+@keyframes logoIn {
+  0% {
+    transform: scale(0.4) rotate(-10deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+/* ---- Page transition wrapper ---- */
+.page-swap {
+  animation: pageIn 0.26s ease both;
+}
+
+@keyframes pageIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- 4-up stat cards with icons ---- */
+.stat-row.four {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-row.four .stat {
+  padding: 12px 6px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-row.four .stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-row.four .stat .num {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  font-size: 24px;
+}
+
+.stat-row.four .stat .lbl {
+  margin-top: 2px;
+  line-height: 1.25;
+}
+
+.stat-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 8px;
+}
+
+@media (max-width: 380px) {
+  .stat-row.four {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---- Progress overview card ---- */
+.overview-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #a855f7 100%);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+.overview-card::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -50px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.overview-ring {
+  flex-shrink: 0;
+  animation: fadeUp 0.5s ease both;
+}
+
+.overview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.overview-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.overview-big {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.overview-num {
+  font-size: 38px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.overview-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.overview-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .overview-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .overview-ring {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Attempt items (icons + mini progress bar) ---- */
+.attempt-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.attempt-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.attempt-ico.practice {
+  background: rgba(79, 70, 229, 0.13);
+  color: var(--primary);
+}
+
+.attempt-ico.mock {
+  background: rgba(168, 85, 247, 0.13);
+  color: var(--violet);
+}
+
+.pill-mini {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+
+.pill-mini.practice {
+  background: rgba(79, 70, 229, 0.14);
+  color: var(--primary);
+}
+
+.pill-mini.mock {
+  background: rgba(168, 85, 247, 0.14);
+  color: var(--violet);
+}
+
+.attempt-track {
+  height: 5px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  margin-top: 7px;
+  overflow: hidden;
+}
+
+.attempt-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ---- Empty state with icon ---- */
+.empty-ico {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: var(--surface-1);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  opacity: 0.75;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Week strip v2: weekday letters ---- */
+.week-wd {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Subject items: mastery done-mark align ---- */
+.subj-bar-label {
+  align-items: center;
+}
+
+/* ---- Bottom nav active pop ---- */
+.nav-item.active .nav-ico {
+  transform: translateY(-1px) scale(1.12);
+}
+
+.nav-ico {
+  display: inline-flex;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.15s ease;
+}
+
+.nav-item:active {
+  transform: scale(0.95);
+}
+
+/* ---- Buttons & tiles press feedback ---- */
+.btn:active,
+.chip:active,
+.tab:active,
+.seg button:active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-splash,
+  .intro-logo,
+  .intro-tile,
+  .intro-ring,
+  .intro-sheen,
+  .intro-name,
+  .intro-tag,
+  .hero-logo,
+  .empty-ico,
+  .hero-logo-sheen,
+  .page-swap {
+    animation: none !important;
+    transition: none !important;
+  }
+}

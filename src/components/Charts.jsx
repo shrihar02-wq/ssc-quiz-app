@@ -1,12 +1,19 @@
 import { SUBJECTS } from '../data/questions'
 import { Icon, SUBJECT_ICONS } from '../lib/icons'
 
-// ---- Score trend line chart (last N attempts) ----
+const fmt = (n) => n.toLocaleString('en-IN')
+
+// ---- Score trend line chart (last N attempts) with average line ----
 export function ScoreTrend({ attempts, maxPoints = 15 }) {
   const data = attempts.slice(0, maxPoints).reverse()
   if (data.length < 2) {
     return (
-      <div className="chart-empty">Take a few attempts to see your score trend 📈</div>
+      <div className="chart-empty">
+        <Icon name="trendup" size={20} style={{ opacity: 0.5 }} />
+        <span style={{ display: 'block', marginTop: 6 }}>
+          Take a few attempts to see your score trend
+        </span>
+      </div>
     )
   }
   const W = 300
@@ -23,6 +30,7 @@ export function ScoreTrend({ attempts, maxPoints = 15 }) {
   const last = data[n - 1]
   const lastP = `${xs(n - 1)},${ys(last.score)}`
   const lastCol = last.score >= 60 ? 'var(--success)' : last.score >= 35 ? 'var(--warn)' : 'var(--danger)'
+  const avg = Math.round(data.reduce((s, a) => s + a.score, 0) / n)
 
   return (
     <div className="card">
@@ -35,6 +43,10 @@ export function ScoreTrend({ attempts, maxPoints = 15 }) {
           <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.4" />
             <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="trendStroke" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="var(--primary)" />
+            <stop offset="100%" stopColor="var(--violet)" />
           </linearGradient>
         </defs>
         {[35, 60].map((g) => (
@@ -49,16 +61,37 @@ export function ScoreTrend({ attempts, maxPoints = 15 }) {
             strokeDasharray="3 4"
           />
         ))}
+        <line
+          x1={pad}
+          x2={W - pad}
+          y1={ys(avg)}
+          y2={ys(avg)}
+          stroke="var(--success)"
+          strokeWidth="1.2"
+          strokeDasharray="5 4"
+          opacity="0.85"
+        />
         <path d={area} fill="url(#trendFill)" />
-        <polyline points={pts} fill="none" stroke="var(--primary)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        <circle cx={xs(0)} cy={ys(data[0].score)} r="2.6" fill="var(--primary)" opacity="0.55" />
+        <polyline points={pts} fill="none" stroke="url(#trendStroke)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+        {data.map((a, i) =>
+          i === n - 1 ? null : (
+            <circle key={i} cx={xs(i)} cy={ys(a.score)} r="2.4" fill="var(--surface)" stroke="var(--primary)" strokeWidth="1.6" />
+          )
+        )}
         <circle cx={xs(n - 1)} cy={ys(last.score)} r="4" fill={lastCol} stroke="var(--surface)" strokeWidth="2" />
         <text x={xs(n - 1) - 26} y={ys(last.score) - 8} fill={lastCol} fontSize="11" fontWeight="800">
           {last.score}%
         </text>
+        <text x={pad} y={ys(avg) - 5} fill="var(--success)" fontSize="10" fontWeight="800" opacity="0.9">
+          avg {avg}%
+        </text>
       </svg>
       <div className="chart-legend">
-        <span>Pass line: <i style={{ background: 'var(--warn)' }} />60%</span>
+        <span>
+          Pass <i style={{ background: 'var(--warn)' }} />60% · Avg{' '}
+          <i style={{ background: 'var(--success)' }} />
+          {avg}%
+        </span>
         <span>Earlier → Latest</span>
       </div>
     </div>
@@ -87,16 +120,21 @@ export function WeekStrip({ attempts }) {
   }
   const max = Math.max(1, ...days.map((x) => x.count))
   const today = new Date().getDate()
+  const activeDays = days.filter((x) => x.count > 0).length
+  const wd = (d) => d.toLocaleDateString('en', { weekday: 'narrow' })
 
   return (
     <div className="card week-card">
       <div className="chart-head">
         <span>Last 14 days</span>
-        <span className="badge bank">{attempts.length} attempts</span>
+        <span className="badge bank">
+          <Icon name="fire" size={13} /> {activeDays} active
+        </span>
       </div>
       <div className="week-grid">
         {days.map((x) => (
           <div className="week-col" key={x.d.getTime()}>
+            <span className="week-wd">{wd(x.d)}</span>
             <div className="week-bar-wrap">
               <div
                 className={`week-bar ${x.count ? 'on' : ''} ${
@@ -126,6 +164,7 @@ export function SubjectBars({ subjectStats }) {
         const pra = st ? st.practiced : 0
         const acc = pra ? Math.round((st.correct / pra) * 100) : 0
         const width = pra ? Math.max(4, acc) : 0
+        const full = pra && st.correct >= pra
         return (
           <div className="subj-bar-row" key={s.id}>
             <span className="subj-bar-ico" style={{ background: `${s.color}1a`, color: s.color }}>
@@ -135,7 +174,7 @@ export function SubjectBars({ subjectStats }) {
               <div className="subj-bar-label">
                 <span>{s.name}</span>
                 <span className="subj-bar-meta">
-                  {pra ? `${st.correct}/${pra}` : '—'}
+                  {pra ? `${st.correct}/${pra}` : 'Not started'}
                 </span>
               </div>
               <div className="bar-track" style={{ height: 7 }}>
@@ -146,8 +185,13 @@ export function SubjectBars({ subjectStats }) {
               </div>
             </div>
             <span className="subj-bar-pct" style={{ color: s.color }}>
-              {pra ? `${acc}%` : '0%'}
+              {pra ? `${acc}%` : '—'}
             </span>
+            {full && (
+              <span className="done-mark" style={{ marginLeft: 4 }}>
+                <Icon name="check" size={14} />
+              </span>
+            )}
           </div>
         )
       })}

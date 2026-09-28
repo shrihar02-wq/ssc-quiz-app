@@ -131,6 +131,12 @@ export default function LoginScreen() {
       </div>
 
       <div className="page" style={{ paddingTop: 16 }}>
+        <div className="hero-login">
+          <span className="hero-logo" style={{ animationDelay: '0.1s' }}>
+            <span className="hero-logo-sheen" />
+            <Icon name="lightning" size={24} />
+          </span>
+        </div>
         <div className="hero" style={{ marginBottom: 20 }}>
           <span className="sheen" />
           <h2 style={{ fontSize: 26 }}>SSC Quiz Prep</h2>

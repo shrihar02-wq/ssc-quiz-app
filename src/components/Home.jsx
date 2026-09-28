@@ -42,6 +42,10 @@ export default function Home() {
         <div className="hero">
           <span className="sheen" />
           <span className="hero-glint" />
+          <span className="hero-logo">
+            <span className="hero-logo-sheen" />
+            <Icon name="lightning" size={26} />
+          </span>
           <h2>{greeting()}, {name || 'Aspirant'} 👋</h2>
           <p>SSC CGL · CHSL · MTS · GD — practice anywhere, on any device.</p>
           <div className="hero-chips">
@@ -86,17 +90,33 @@ export default function Home() {
         </div>
 
         <div className="section-title">Your stats</div>
-        <div className="stat-row">
+        <div className="stat-row four">
           <div className="stat">
-            <div className="num">{p.answered}</div>
+            <span className="stat-ico" style={{ color: 'var(--primary)', background: 'rgba(79,70,229,.14)' }}>
+              <Icon name="stats" size={16} />
+            </span>
+            <div className="num" style={{ color: 'var(--primary)' }}>{p.attempts.length}</div>
+            <div className="lbl">Attempts</div>
+          </div>
+          <div className="stat">
+            <span className="stat-ico" style={{ color: 'var(--violet)', background: 'rgba(168,85,247,.14)' }}>
+              <Icon name="trendup" size={16} />
+            </span>
+            <div className="num" style={{ color: 'var(--violet)' }}>{p.answered}</div>
             <div className="lbl">Answered</div>
           </div>
           <div className="stat">
-            <div className="num">{accuracy}%</div>
+            <span className="stat-ico" style={{ color: 'var(--warn)', background: 'rgba(245,158,11,.14)' }}>
+              <Icon name="target" size={16} />
+            </span>
+            <div className="num" style={{ color: 'var(--warn)' }}>{accuracy}%</div>
             <div className="lbl">Accuracy</div>
           </div>
           <div className="stat">
-            <div className="num">{p.streak.current}</div>
+            <span className="stat-ico" style={{ color: 'var(--success)', background: 'rgba(34,197,94,.14)' }}>
+              <Icon name="fire" size={16} />
+            </span>
+            <div className="num" style={{ color: 'var(--success)' }}>{p.streak.current}</div>
             <div className="lbl">Day streak</div>
           </div>
         </div>
@@ -111,13 +131,35 @@ export default function Home() {
         <div className="section-title">Latest attempts</div>
         {p.attempts.length === 0 ? (
           <div className="empty">
-            No attempts yet. Start a practice session or a mock test to begin!
+            <span className="empty-ico">
+              <Icon name="pencil" size={26} />
+            </span>
+            <div>No attempts yet</div>
+            <div className="small muted" style={{ marginTop: 4 }}>
+              Take a practice session or a mock test to begin!
+            </div>
+            <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+              <Link to="/practice" className="btn">
+                <Icon name="practice" size={14} /> Practice
+              </Link>
+              <Link to="/mock" className="btn btn-outline">
+                <Icon name="clock" size={14} /> Mock test
+              </Link>
+            </div>
           </div>
         ) : (
           p.attempts.slice(0, 5).map((a) => (
             <div className="attempt-item" key={a.id}>
-              <div>
-                <div className="t">{a.label}</div>
+              <span className={`attempt-ico ${a.type === 'mock' ? 'mock' : 'practice'}`}>
+                <Icon name={a.type === 'mock' ? 'clock' : 'pencil'} size={14} />
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="t">
+                  {a.label}
+                  <span className={`pill-mini ${a.type === 'mock' ? 'mock' : 'practice'}`}>
+                    {a.type === 'mock' ? 'Mock' : 'Practice'}
+                  </span>
+                </div>
                 <div className="s">
                   {new Date(a.ts).toLocaleString(undefined, {
                     day: 'numeric',
@@ -125,6 +167,15 @@ export default function Home() {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
+                </div>
+                <div className="attempt-track">
+                  <div
+                    className="attempt-fill"
+                    style={{
+                      width: `${Math.min(100, a.score)}%`,
+                      background: a.score >= 60 ? 'var(--success)' : a.score >= 35 ? 'var(--warn)' : 'var(--danger)',
+                    }}
+                  />
                 </div>
               </div>
               <span className={`pill ${a.score >= 60 ? 'good' : a.score >= 35 ? 'mid' : 'bad'}`}>

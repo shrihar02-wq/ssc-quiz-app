@@ -19,7 +19,7 @@ export default function BottomNav() {
           to={t.to}
           className={`nav-item ${pathname === t.to ? 'active' : ''}`}
         >
-          <Icon name={t.icon} size={20} className="nav-ico" />
+          <span className="nav-ico">{<Icon name={t.icon} size={20} />}</span>
           <span>{t.label}</span>
         </Link>
       ))}

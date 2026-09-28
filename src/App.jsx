@@ -7,6 +7,7 @@ import Results from './components/Results'
 import Stats from './components/Stats'
 import LoginScreen from './components/LoginScreen'
 import BottomNav from './components/BottomNav'
+import IntroSplash from './components/IntroSplash'
 import { getAuth } from './lib/auth'
 
 const NAV_HIDDEN = ['/quiz', '/login']
@@ -26,15 +27,17 @@ function Layout() {
 
   return (
     <>
-      <Routes>
-        <Route path="/login" element={loggedIn ? <Navigate to="/" replace /> : <LoginScreen />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/practice" element={<Practice />} />
-        <Route path="/mock" element={<Mock />} />
-        <Route path="/quiz" element={<Quiz />} />
-        <Route path="/results" element={<Results />} />
-        <Route path="/stats" element={<Stats />} />
-      </Routes>
+      <div className="page-swap" key={pathname}>
+        <Routes>
+          <Route path="/login" element={loggedIn ? <Navigate to="/" replace /> : <LoginScreen />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/practice" element={<Practice />} />
+          <Route path="/mock" element={<Mock />} />
+          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/results" element={<Results />} />
+          <Route path="/stats" element={<Stats />} />
+        </Routes>
+      </div>
       {!NAV_HIDDEN.some((p) => pathname.startsWith(p)) && <BottomNav />}
     </>
   )
@@ -44,6 +47,7 @@ export default function App() {
   return (
     <HashRouter>
       <Layout />
+      <IntroSplash />
     </HashRouter>
   )
 }
