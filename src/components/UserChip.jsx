@@ -8,12 +8,14 @@ export default function UserChip() {
   if (!auth || !auth.token) return null
 
   return (
-    <div className="user-chip">
-      <span className="uc-avatar">{name.charAt(0).toUpperCase()}</span>
-      <span className="uc-name">{name}</span>
-      <button className="uc-logout" onClick={logout} title="Logout">
-        <Icon name="logout" size={15} />
+    <>
+      <div className="user-chip">
+        <span className="uc-avatar">{name.charAt(0).toUpperCase()}</span>
+        <span className="uc-name">{name}</span>
+      </div>
+      <button className="logout-btn" onClick={logout} title="Log out" aria-label="Log out">
+        <Icon name="logout" size={16} />
       </button>
-    </div>
+    </>
   )
 }
