@@ -1,8 +1,8 @@
-import { getAuth, logout } from '../lib/auth'
+import { useAuth, logout } from '../lib/auth'
 import { Icon } from '../lib/icons'
 
 export default function UserChip() {
-  const auth = getAuth()
+  const auth = useAuth()
   const name = auth && auth.user ? auth.user.name.split(' ')[0] : ''
 
   if (!auth || !auth.token) return null

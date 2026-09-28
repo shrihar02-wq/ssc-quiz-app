@@ -8,13 +8,14 @@ import Stats from './components/Stats'
 import LoginScreen from './components/LoginScreen'
 import BottomNav from './components/BottomNav'
 import IntroSplash from './components/IntroSplash'
-import { getAuth } from './lib/auth'
+import BackHandler from './components/BackHandler'
+import { useAuth } from './lib/auth'
 
 const NAV_HIDDEN = ['/quiz', '/login']
 
 function Layout() {
   const { pathname } = useLocation()
-  const auth = getAuth()
+  const auth = useAuth()
   const loggedIn = !!auth && !!auth.token
 
   // Every user must log in — no guest/offline mode anymore.
@@ -47,6 +48,7 @@ export default function App() {
   return (
     <HashRouter>
       <Layout />
+      <BackHandler />
       <IntroSplash />
     </HashRouter>
   )

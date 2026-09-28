@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { Link } from 'react-router-dom'
 import { SUBJECTS, totalQuestions, categoryCount } from '../data/questions'
 import { subscribeProgress, getProgress } from '../lib/store'
-import { getAuth } from '../lib/auth'
+import { getAuth, useAuth } from '../lib/auth'
 import UserChip from './UserChip'
 import ThemeToggle from './ThemeToggle'
 import { Icon, SUBJECT_ICONS } from '../lib/icons'
@@ -22,7 +22,7 @@ function greeting() {
 
 export default function Home() {
   const p = useProgress()
-  const auth = getAuth()
+  const auth = useAuth()
   const name = auth && auth.user ? auth.user.name.split(' ')[0] : null
   const accuracy = p.answered ? Math.round((p.correct / p.answered) * 100) : 0
   const totalQs = totalQuestions()

@@ -1,6 +1,7 @@
 // Auth state: logged-in user + token. Persisted so the session survives
 // app restarts. Every user must sign up and verify their email via OTP.
 
+import { useSyncExternalStore } from 'react'
 import { api } from './api'
 
 const KEY = 'ssc-quiz-auth-v1'
@@ -23,6 +24,12 @@ export function getAuth() {
 export function subscribeAuth(fn) {
   listeners.add(fn)
   return () => listeners.delete(fn)
+}
+
+// Reactive auth state — components using this re-render the moment the
+// session changes, so logout applies instantly.
+export function useAuth() {
+  return useSyncExternalStore(subscribeAuth, getAuth)
 }
 
 function set(newState) {
