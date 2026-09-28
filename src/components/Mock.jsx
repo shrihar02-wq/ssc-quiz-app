@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { buildMockSet, totalQuestions } from '../data/questions'
+import { SUBJECTS, buildMockSet, totalQuestions, categoryCount } from '../data/questions'
 import { newSession } from '../lib/session'
 import UserChip from './UserChip'
 import ThemeToggle from './ThemeToggle'
-import { Icon } from '../lib/icons'
+import { Icon, SUBJECT_ICONS } from '../lib/icons'
 
 const PRESETS = [
   { label: 'Mini Mock', qs: 25, min: 25, icon: 'lightning', desc: 'Quick 25-minute warm-up' },
@@ -18,13 +18,26 @@ export default function Mock() {
   const [preset, setPreset] = useState(2)
   const [qCount, setQCount] = useState(100)
   const [minutes, setMinutes] = useState(60)
+  const [selected, setSelected] = useState(
+    SUBJECTS.filter((s) => s.id !== 'english').map((s) => s.id)
+  )
   const bank = totalQuestions()
 
+  const available = selected.reduce((n, id) => n + categoryCount(id), 0)
+  const qs = PRESETS[preset].label === 'Custom' ? qCount : Math.min(PRESETS[preset].qs, available)
+  const mins = PRESETS[preset].label === 'Custom' ? minutes : PRESETS[preset].min
+
+  function toggle(id) {
+    setSelected((cur) =>
+      cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]
+    )
+  }
+
   function start() {
+    if (selected.length === 0 || available === 0) return
     const p = PRESETS[preset]
-    const qs = p.label === 'Custom' ? qCount : p.qs
-    const mins = p.label === 'Custom' ? minutes : p.min
-    const questions = buildMockSet(Math.min(qs, bank))
+    const count = Math.min(p.label === 'Custom' ? qCount : p.qs, available, bank)
+    const questions = buildMockSet(count, selected)
     if (questions.length === 0) return
     const id = newSession({
       type: 'mock',
@@ -50,53 +63,85 @@ export default function Mock() {
       <div className="page">
         <div className="card" style={{ marginBottom: 16 }}>
           <p className="small" style={{ lineHeight: 1.5 }}>
-            Mocks mix <b>GK, Reasoning &amp; Quant</b> sections (like SSC CGL
-            Tier-I, minus English). The countdown timer auto-submits the test
-            when time runs out, and results are saved to your progress.
+            Pick the <b>subjects you want</b> below — the paper is built from your
+            selection. Questions and options are <b>shuffled</b> every time. The
+            countdown timer auto-submits when time runs out, and results are
+            saved to your progress.
           </p>
         </div>
 
+        <div className="section-title">
+          Choose subjects
+          <span className="section-count">{selected.length}/{SUBJECTS.length} selected</span>
+        </div>
+        <div className="chip-row" style={{ marginBottom: 18 }}>
+          {SUBJECTS.map((s) => {
+            const on = selected.includes(s.id)
+            return (
+              <button
+                key={s.id}
+                className={`chip subj-chip ${on ? 'on' : ''}`}
+                style={
+                  on
+                    ? { background: `${s.color}1f`, borderColor: s.color, color: s.color }
+                    : undefined
+                }
+                onClick={() => toggle(s.id)}
+              >
+                <Icon name={SUBJECT_ICONS[s.id] || 'bank'} size={15} style={{ verticalAlign: -2 }} /> {s.name}
+              </button>
+            )
+          })}
+        </div>
+
         <div className="section-title">Choose a paper</div>
-        {PRESETS.map((p, i) => (
-          <button
-            key={p.label}
-            className={`mock-preset ${preset === i ? 'active' : ''}`}
-            onClick={() => setPreset(i)}
-          >
-            <span className="mp-emoji">
-              <Icon name={p.icon} size={22} style={{ color: 'var(--violet)' }} />
-            </span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="mp-name">{p.label}</div>
-              <div className="mp-meta">
-                {p.desc}
-                {p.label !== 'Custom' ? ` · ${p.qs} Q · ${p.min} min` : ''}
-              </div>
-            </div>
-            {preset === i && (
-              <span className="mp-check">
-                <Icon name="check" size={14} />
+        {PRESETS.map((p, i) => {
+          const cap = Math.min(p.qs, available)
+          const disabled = p.label !== 'Custom' && cap === 0
+          return (
+            <button
+              key={p.label}
+              className={`mock-preset ${preset === i ? 'active' : ''} ${disabled ? 'off' : ''}`}
+              onClick={() => !disabled && setPreset(i)}
+            >
+              <span className="mp-emoji">
+                <Icon name={p.icon} size={22} style={{ color: 'var(--violet)' }} />
               </span>
-            )}
-          </button>
-        ))}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="mp-name">{p.label}</div>
+                <div className="mp-meta">
+                  {disabled
+                    ? 'Select at least one subject'
+                    : p.label !== 'Custom'
+                      ? `${p.desc} · ${cap} Q · ${p.min} min`
+                      : p.desc}
+                </div>
+              </div>
+              {preset === i && !disabled && (
+                <span className="mp-check">
+                  <Icon name="check" size={14} />
+                </span>
+              )}
+            </button>
+          )
+        })}
 
         {PRESETS[preset].label === 'Custom' && (
           <>
             <div className="field" style={{ marginTop: 16 }}>
-              <label>Questions (max {bank.toLocaleString('en-IN')})</label>
+              <label>Questions (available: {available.toLocaleString('en-IN')})</label>
               <div className="stepper">
-                <button onClick={() => setQCount((c) => Math.max(5, c - 5))}>−</button>
+                <button onClick={() => setQCount((c) => Math.max(1, c - 5))}>−</button>
                 <input
                   type="number"
                   min={1}
-                  max={bank}
-                  value={qCount}
+                  max={Math.max(1, available)}
+                  value={Math.min(qCount, Math.max(1, available))}
                   onChange={(e) =>
-                    setQCount(Math.max(1, Math.min(bank, Number(e.target.value) || 1)))
+                    setQCount(Math.max(1, Math.min(available, Number(e.target.value) || 1)))
                   }
                 />
-                <button onClick={() => setQCount((c) => Math.min(bank, c + 5))}>+</button>
+                <button onClick={() => setQCount((c) => Math.min(available, c + 5))}>+</button>
               </div>
             </div>
             <div className="field">
@@ -118,8 +163,12 @@ export default function Mock() {
           </>
         )}
 
-        <button className="btn btn-primary btn-block" onClick={start}>
-          Start Mock Test
+        <button
+          className="btn btn-primary btn-block"
+          onClick={start}
+          disabled={selected.length === 0 || available === 0}
+        >
+          Start Mock Test · {qs} Q
         </button>
       </div>
     </div>

@@ -614,38 +614,50 @@ export function buildPracticeSet(cat, count) {
   return take(rotationPool(cat), count)
 }
 
-// Build a mock test mixing the sections asked in SSC exams (GK, Reasoning,
-// Quant — English is skipped like most CGL papers). Mock sections are rotated
-// and interleaved so the paper pattern differs every attempt.
-export function buildMockSet(count) {
-  const sections = [...MOCK_EVENLY].sort(() => Math.random() - 0.5)
-  const perSection = Math.ceil(count / sections.length)
-  const parts = sections.map((s) => rotationPool(s.id).slice(0, Math.min(perSection, categoryCount(s.id))))
-  const out = []
-  const idx = Array(parts.length).fill(0)
-  let any = true
-  const start = Math.floor(Math.random() * sections.length)
-  while (any) {
-    any = false
-    for (let k = 0; k < sections.length; k++) {
-      const i = (start + k) % sections.length
-      if (idx[i] < parts[i].length) {
-        out.push(parts[i][idx[i]])
-        idx[i]++
-        any = true
-      }
-    }
+// Build a mock test from the sections the user selected (default: everything
+// except English, like a CGL paper). All selected pools are combined, fully
+// shuffled, then trimmed to `count` — and every question's options are
+// shuffled too, so each attempt differs.
+export function buildMockSet(count, cats) {
+  const idSet = new Set(SUBJECTS.map((s) => s.id))
+  const picked = Array.isArray(cats) && cats.length
+    ? cats.filter((c) => idSet.has(c))
+    : MOCK_EVENLY.map((s) => s.id)
+  if (picked.length === 0) return []
+
+  const pool = []
+  for (const cat of picked) pool.push(...rotationPool(cat))
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
   }
-  return out.slice(0, count).map(watermark)
+  return pool.slice(0, Math.min(count, pool.length)).map(watermark)
+}
+
+// Shuffle the options of a single question and fix the answer index,
+// so the same question never shows its options in the same order twice.
+function shuffleOptions(q) {
+  const opts = [...q.options]
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[opts[i], opts[j]] = [opts[j], opts[i]]
+  }
+  const answer = opts.indexOf(q.options[q.answer])
+  return { ...q, options: opts, answer: answer === -1 ? q.answer : answer }
 }
 
 function watermark(q) {
-  return {
+  return shuffleOptions({
     id: q.id,
     cat: q.cat,
     text: q.text,
     options: [...q.options],
     answer: q.answer,
     explanation: q.explanation,
-  }
+  })
+}
+
+// Total questions available across a chosen set of subjects.
+export function availableFor(cats) {
+  return BANK.filter((q) => cats.includes(q.cat)).length
 }
