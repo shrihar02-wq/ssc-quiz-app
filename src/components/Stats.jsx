@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { SUBJECTS, categoryCount } from '../data/questions'
 import { subscribeProgress, getProgress, resetProgress } from '../lib/store'
@@ -264,8 +265,9 @@ export default function Stats() {
         </button>
       </div>
 
-      {confirm && (
-        <div className="modal-backdrop" onClick={() => setConfirm(false)}>
+      {confirm &&
+        createPortal(
+          <div className="modal-backdrop" onClick={() => setConfirm(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Reset progress?</h3>
             <p>This will permanently erase your stats and attempt history.</p>
@@ -285,8 +287,9 @@ export default function Stats() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   )
 }

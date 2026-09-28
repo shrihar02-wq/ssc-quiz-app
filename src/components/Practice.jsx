@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { SUBJECTS, categoryCount, buildPracticeSet } from '../data/questions'
 import { newSession } from '../lib/session'
@@ -109,9 +110,11 @@ export default function Practice() {
         )}
       </div>
 
-      {showConfig && subject && (
-        <div className="overlay" onClick={() => setShowConfig(false)}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+      {showConfig &&
+        subject &&
+        createPortal(
+          <div className="overlay" onClick={() => setShowConfig(false)}>
+            <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <div className="sheet-head" style={{ background: `linear-gradient(135deg, ${subject.color}29, transparent 70%)` }}>
               <span className="sheet-banner-ico" style={{ background: `${subject.color}1f`, color: subject.color, borderColor: `${subject.color}55` }}>
                 <Icon name={SUBJECT_ICONS[subject.id] || 'bank'} size={28} />
@@ -183,8 +186,9 @@ export default function Practice() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
