@@ -117,59 +117,66 @@ export default function Practice() {
                 <Icon name={SUBJECT_ICONS[subject.id] || 'bank'} size={22} />
               </span>
               <h3>{subject.name}</h3>
+              <button className="sheet-close" onClick={() => setShowConfig(false)} aria-label="Close">
+                <Icon name="close" size={16} />
+              </button>
             </div>
 
-            <div className="field">
-              <label>Number of questions (max {fmt(max)})</label>
-              <div className="stepper">
-                <button onClick={() => setCount((c) => Math.max(1, c - 5))}>−</button>
-                <input
-                  type="number"
-                  min={1}
-                  max={max}
-                  value={count}
-                  onChange={(e) =>
-                    setCount(Math.max(1, Math.min(max, Number(e.target.value) || 1)))
-                  }
-                />
-                <button onClick={() => setCount((c) => Math.min(max, c + 5))}>+</button>
-              </div>
-              <div className="seg" style={{ marginTop: 10 }}>
-                {quick.map((n) => (
-                  <button
-                    key={n}
-                    className={count === n ? 'active' : ''}
-                    onClick={() => setCount(Math.min(n, max))}
-                  >
-                    {n}
+            <div className="sheet-body">
+              <div className="field">
+                <label>Number of questions (max {fmt(max)})</label>
+                <div className="stepper">
+                  <button onClick={() => setCount((c) => Math.max(1, c - 5))}>−</button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={max}
+                    value={count}
+                    onChange={(e) =>
+                      setCount(Math.max(1, Math.min(max, Number(e.target.value) || 1)))
+                    }
+                  />
+                  <button onClick={() => setCount((c) => Math.min(max, c + 5))}>+</button>
+                </div>
+                <div className="seg" style={{ marginTop: 10 }}>
+                  {quick.map((n) => (
+                    <button
+                      key={n}
+                      className={count === n ? 'active' : ''}
+                      onClick={() => setCount(Math.min(n, max))}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                  <button className={count === max ? 'active' : ''} onClick={() => setCount(max)}>
+                    All
                   </button>
-                ))}
-                <button className={count === max ? 'active' : ''} onClick={() => setCount(max)}>
-                  All
-                </button>
+                </div>
               </div>
+
+              <div className="field">
+                <label>Explanations after each question</label>
+                <div className="seg">
+                  <button className={showExplanations ? 'active' : ''} onClick={() => setShowExplanations(true)}>Show</button>
+                  <button className={!showExplanations ? 'active' : ''} onClick={() => setShowExplanations(false)}>Hide</button>
+                </div>
+              </div>
+
+              {max <= 100 && (
+                <div className="explanation" style={{ background: 'var(--primary-light)', borderColor: 'var(--primary)' }}>
+                  <b>This is a curated GK bank ({fmt(max)} Qs).</b> It needs real,
+                  verified questions to scale up — drop a question bank JSON into{' '}
+                  <code>src/data/custom/</code> (see{' '}
+                  <code>scripts/import-gk.mjs</code>) and rebuild to reach 1,000+.
+                </div>
+              )}
             </div>
 
-            <div className="field">
-              <label>Explanations after each question</label>
-              <div className="seg">
-                <button className={showExplanations ? 'active' : ''} onClick={() => setShowExplanations(true)}>Show</button>
-                <button className={!showExplanations ? 'active' : ''} onClick={() => setShowExplanations(false)}>Hide</button>
-              </div>
+            <div className="sheet-foot">
+              <button className="btn btn-primary btn-block" onClick={start}>
+                Start Practice
+              </button>
             </div>
-
-            {max <= 100 && (
-              <div className="explanation" style={{ background: 'var(--primary-light)', borderColor: 'var(--primary)' }}>
-                <b>This is a curated GK bank ({fmt(max)} Qs).</b> It needs real,
-                verified questions to scale up — drop a question bank JSON into{' '}
-                <code>src/data/custom/</code> (see{' '}
-                <code>scripts/import-gk.mjs</code>) and rebuild to reach 1,000+.
-              </div>
-            )}
-
-            <button className="btn btn-primary btn-block" onClick={start}>
-              Start Practice
-            </button>
           </div>
         </div>
       )}

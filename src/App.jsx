@@ -9,6 +9,7 @@ import LoginScreen from './components/LoginScreen'
 import BottomNav from './components/BottomNav'
 import IntroSplash from './components/IntroSplash'
 import BackHandler from './components/BackHandler'
+import ScrollToTop from './components/ScrollToTop'
 import { useAuth } from './lib/auth'
 
 const NAV_HIDDEN = ['/quiz', '/login']
@@ -49,6 +50,7 @@ export default function App() {
     <HashRouter>
       <Layout />
       <BackHandler />
+      <ScrollToTop />
       <IntroSplash />
     </HashRouter>
   )
