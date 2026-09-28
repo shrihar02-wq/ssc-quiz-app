@@ -33,7 +33,7 @@ export default function Home() {
         <span className="topbar-logo">
           <Icon name="lightning" size={17} />
         </span>
-        <h1>SSC Quiz Prep</h1>
+        <h1>SSC Quiz Prep <span className="ver-badge">v2</span></h1>
         <ThemeToggle />
         <UserChip />
       </div>

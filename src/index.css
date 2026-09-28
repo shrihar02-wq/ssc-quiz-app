@@ -151,6 +151,19 @@ a {
   border: 1px solid var(--border);
 }
 
+.ver-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.14);
+  color: var(--violet);
+  vertical-align: 2px;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
 /* Header / Topbar */
 .topbar {
   position: sticky;

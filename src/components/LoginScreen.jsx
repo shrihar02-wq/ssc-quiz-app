@@ -297,6 +297,9 @@ export default function LoginScreen() {
         <Icon name="lock" size={13} style={{ verticalAlign: -2 }} /> Your details
         are encrypted and never shared.
       </p>
+      <p className="small muted" style={{ textAlign: 'center', marginTop: 8, fontWeight: 700 }}>
+        SSC Quiz Prep v2.0.0
+      </p>
       </div>
     </div>
   )
